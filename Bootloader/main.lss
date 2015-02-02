@@ -1,0 +1,1163 @@
+
+main.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000003c0  00003c00  00003c00  00000074  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .trampolines  00000000  00003fc0  00003fc0  00000434  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .bss          00000080  00800060  00003fc0  00000434  2**0
+                  ALLOC
+  3 .stab         00000dd4  00000000  00000000  00000434  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  4 .stabstr      00000a1e  00000000  00000000  00001208  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00003c00 <__ctors_end>:
+    3c00:	11 24       	eor	r1, r1
+    3c02:	1f be       	out	0x3f, r1	; 63
+    3c04:	cf e5       	ldi	r28, 0x5F	; 95
+    3c06:	d4 e0       	ldi	r29, 0x04	; 4
+    3c08:	de bf       	out	0x3e, r29	; 62
+    3c0a:	cd bf       	out	0x3d, r28	; 61
+
+00003c0c <__do_clear_bss>:
+    3c0c:	10 e0       	ldi	r17, 0x00	; 0
+    3c0e:	a0 e6       	ldi	r26, 0x60	; 96
+    3c10:	b0 e0       	ldi	r27, 0x00	; 0
+    3c12:	01 c0       	rjmp	.+2      	; 0x3c16 <.do_clear_bss_start>
+
+00003c14 <.do_clear_bss_loop>:
+    3c14:	1d 92       	st	X+, r1
+
+00003c16 <.do_clear_bss_start>:
+    3c16:	a0 3e       	cpi	r26, 0xE0	; 224
+    3c18:	b1 07       	cpc	r27, r17
+    3c1a:	e1 f7       	brne	.-8      	; 0x3c14 <.do_clear_bss_loop>
+    3c1c:	0e 94 32 1e 	call	0x3c64	; 0x3c64 <main>
+    3c20:	0c 94 de 1f 	jmp	0x3fbc	; 0x3fbc <_exit>
+
+00003c24 <__bad_interrupt>:
+    3c24:	0c 94 14 1e 	jmp	0x3c28	; 0x3c28 <__vector_default>
+
+00003c28 <__vector_default>:
+
+#if defined(BOOTLOADERHASNOVECTORS)
+	#warning "This Bootloader does not link interrupt vectors - see makefile"
+	/* make the linker happy - it wants to see __vector_default */
+	// void __vector_default(void) { ; }
+	void __vector_default(void) { ; }
+    3c28:	08 95       	ret
+
+00003c2a <send_boot>:
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3c2a:	5d 9b       	sbis	0x0b, 5	; 11
+    3c2c:	fe cf       	rjmp	.-4      	; 0x3c2a <send_boot>
+	UART_DATA = data;
+    3c2e:	81 e4       	ldi	r24, 0x41	; 65
+    3c30:	8c b9       	out	0x0c, r24	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3c32:	5d 9b       	sbis	0x0b, 5	; 11
+    3c34:	fe cf       	rjmp	.-4      	; 0x3c32 <send_boot+0x8>
+	UART_DATA = data;
+    3c36:	86 e5       	ldi	r24, 0x56	; 86
+    3c38:	8c b9       	out	0x0c, r24	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3c3a:	5d 9b       	sbis	0x0b, 5	; 11
+    3c3c:	fe cf       	rjmp	.-4      	; 0x3c3a <send_boot+0x10>
+	UART_DATA = data;
+    3c3e:	82 e5       	ldi	r24, 0x52	; 82
+    3c40:	8c b9       	out	0x0c, r24	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3c42:	5d 9b       	sbis	0x0b, 5	; 11
+    3c44:	fe cf       	rjmp	.-4      	; 0x3c42 <send_boot+0x18>
+	UART_DATA = data;
+    3c46:	82 e4       	ldi	r24, 0x42	; 66
+    3c48:	8c b9       	out	0x0c, r24	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3c4a:	5d 9b       	sbis	0x0b, 5	; 11
+    3c4c:	fe cf       	rjmp	.-4      	; 0x3c4a <send_boot+0x20>
+	UART_DATA = data;
+    3c4e:	8f e4       	ldi	r24, 0x4F	; 79
+    3c50:	8c b9       	out	0x0c, r24	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3c52:	5d 9b       	sbis	0x0b, 5	; 11
+    3c54:	fe cf       	rjmp	.-4      	; 0x3c52 <send_boot+0x28>
+	UART_DATA = data;
+    3c56:	8f e4       	ldi	r24, 0x4F	; 79
+    3c58:	8c b9       	out	0x0c, r24	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3c5a:	5d 9b       	sbis	0x0b, 5	; 11
+    3c5c:	fe cf       	rjmp	.-4      	; 0x3c5a <send_boot+0x30>
+	UART_DATA = data;
+    3c5e:	84 e5       	ldi	r24, 0x54	; 84
+    3c60:	8c b9       	out	0x0c, r24	; 12
+	sendchar('R');
+	sendchar('B');
+	sendchar('O');
+	sendchar('O');
+	sendchar('T');
+}
+    3c62:	08 95       	ret
+
+00003c64 <main>:
+
+static void (*jump_to_app)(void) = 0x0000;
+
+int main(void)
+{
+    3c64:	2f 92       	push	r2
+    3c66:	3f 92       	push	r3
+    3c68:	4f 92       	push	r4
+    3c6a:	5f 92       	push	r5
+    3c6c:	6f 92       	push	r6
+    3c6e:	7f 92       	push	r7
+    3c70:	8f 92       	push	r8
+    3c72:	9f 92       	push	r9
+    3c74:	af 92       	push	r10
+    3c76:	bf 92       	push	r11
+    3c78:	cf 92       	push	r12
+    3c7a:	df 92       	push	r13
+    3c7c:	ef 92       	push	r14
+    3c7e:	ff 92       	push	r15
+    3c80:	0f 93       	push	r16
+    3c82:	1f 93       	push	r17
+    3c84:	cf 93       	push	r28
+    3c86:	df 93       	push	r29
+	uint16_t address = 0;
+	uint8_t device = 0, val;
+
+//clear PD5, for PID project bootloader
+	PORTD &= ~(1<<5);
+    3c88:	95 98       	cbi	0x12, 5	; 18
+	DDRD |= (1<<5);
+    3c8a:	8d 9a       	sbi	0x11, 5	; 17
+#ifdef DISABLE_WDT_AT_STARTUP
+	#ifdef WDT_OFF_SPECIAL
+		#warning "using target specific watchdog_off"
+		bootloader_wdt_off();
+	#else
+		cli();
+    3c8c:	f8 94       	cli
+		wdt_reset();
+    3c8e:	a8 95       	wdr
+		wdt_disable();
+    3c90:	88 e1       	ldi	r24, 0x18	; 24
+    3c92:	0f b6       	in	r0, 0x3f	; 63
+    3c94:	f8 94       	cli
+    3c96:	81 bd       	out	0x21, r24	; 33
+    3c98:	11 bc       	out	0x21, r1	; 33
+    3c9a:	0f be       	out	0x3f, r0	; 63
+	
+#ifdef START_POWERSAVE
+	uint8_t OK = 1;
+#endif
+
+	BLDDR  &= ~(1<<BLPNUM);		// set as Input
+    3c9c:	8f 98       	cbi	0x11, 7	; 17
+	BLPORT |= (1<<BLPNUM);		// Enable pullup
+    3c9e:	97 9a       	sbi	0x12, 7	; 18
+
+	// Set baud rate
+	UART_BAUD_HIGH = (UART_CALC_BAUDRATE(BAUDRATE)>>8) & 0xFF;
+    3ca0:	10 bc       	out	0x20, r1	; 32
+	UART_BAUD_LOW = (UART_CALC_BAUDRATE(BAUDRATE) & 0xFF);
+    3ca2:	99 e1       	ldi	r25, 0x19	; 25
+    3ca4:	99 b9       	out	0x09, r25	; 9
+
+#ifdef UART_DOUBLESPEED
+	UART_STATUS = ( 1<<UART_DOUBLE );
+#endif
+
+	UART_CTRL = UART_CTRL_DATA;
+    3ca6:	8a b9       	out	0x0a, r24	; 10
+	UART_CTRL2 = UART_CTRL2_DATA;
+    3ca8:	86 e8       	ldi	r24, 0x86	; 134
+    3caa:	80 bd       	out	0x20, r24	; 32
+    3cac:	00 e0       	ldi	r16, 0x00	; 0
+    3cae:	10 e0       	ldi	r17, 0x00	; 0
+
+			#ifdef ENABLE_BOOT_LED	// LED OFF
+			BIPORT &= ~(1<<BIPNUM);	
+			BIDDR  &= ~(1<<BIPNUM);
+			#endif
+			jump_to_app();			// Jump to application sector
+    3cb0:	ee 24       	eor	r14, r14
+    3cb2:	ff 24       	eor	r15, r15
+    milliseconds can be achieved.
+ */
+void
+_delay_loop_2(uint16_t __count)
+{
+	__asm__ volatile (
+    3cb4:	c0 e2       	ldi	r28, 0x20	; 32
+    3cb6:	de e4       	ldi	r29, 0x4E	; 78
+#elif defined(START_WAIT)
+
+	uint16_t cnt = 0;
+
+	while (1) {
+		if (UART_STATUS & (1<<UART_RXREADY))
+    3cb8:	5f 9b       	sbis	0x0b, 7	; 11
+    3cba:	03 c0       	rjmp	.+6      	; 0x3cc2 <main+0x5e>
+			if (UART_DATA == START_WAIT_UARTCHAR)
+    3cbc:	8c b1       	in	r24, 0x0c	; 12
+    3cbe:	83 35       	cpi	r24, 0x53	; 83
+    3cc0:	69 f0       	breq	.+26     	; 0x3cdc <main+0x78>
+				break;
+
+		if (cnt++ >= WAIT_VALUE) {
+    3cc2:	23 e0       	ldi	r18, 0x03	; 3
+    3cc4:	08 3e       	cpi	r16, 0xE8	; 232
+    3cc6:	12 07       	cpc	r17, r18
+    3cc8:	18 f0       	brcs	.+6      	; 0x3cd0 <main+0x6c>
+			BLPORT &= ~(1<<BLPNUM);		// set to default
+    3cca:	97 98       	cbi	0x12, 7	; 18
+
+			#ifdef ENABLE_BOOT_LED	// LED OFF
+			BIPORT &= ~(1<<BIPNUM);	
+			BIDDR  &= ~(1<<BIPNUM);
+			#endif
+			jump_to_app();			// Jump to application sector
+    3ccc:	f7 01       	movw	r30, r14
+    3cce:	09 95       	icall
+	while (1) {
+		if (UART_STATUS & (1<<UART_RXREADY))
+			if (UART_DATA == START_WAIT_UARTCHAR)
+				break;
+
+		if (cnt++ >= WAIT_VALUE) {
+    3cd0:	0f 5f       	subi	r16, 0xFF	; 255
+    3cd2:	1f 4f       	sbci	r17, 0xFF	; 255
+    3cd4:	ce 01       	movw	r24, r28
+    3cd6:	01 97       	sbiw	r24, 0x01	; 1
+    3cd8:	f1 f7       	brne	.-4      	; 0x3cd6 <main+0x72>
+    3cda:	ee cf       	rjmp	.-36     	; 0x3cb8 <main+0x54>
+			jump_to_app();			// Jump to application sector
+		}
+
+		_delay_ms(10);
+	}
+	send_boot();
+    3cdc:	0e 94 15 1e 	call	0x3c2a	; 0x3c2a <send_boot>
+    3ce0:	55 24       	eor	r5, r5
+    3ce2:	aa 24       	eor	r10, r10
+    3ce4:	bb 24       	eor	r11, r11
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+	UART_DATA = data;
+    3ce6:	ad e0       	ldi	r26, 0x0D	; 13
+    3ce8:	ca 2e       	mov	r12, r26
+    3cea:	f3 e0       	ldi	r31, 0x03	; 3
+    3cec:	4f 2e       	mov	r4, r31
+
+		// Exit upgrade
+		} 
+		else if (val == 'E') 
+		{
+		wdt_enable(EXIT_WDT_TIME); // Enable Watchdog Timer to give reset
+    3cee:	e8 e1       	ldi	r30, 0x18	; 24
+    3cf0:	2e 2e       	mov	r2, r30
+    3cf2:	31 2c       	mov	r3, r1
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+    3cf4:	5f 9b       	sbis	0x0b, 7	; 11
+    3cf6:	fe cf       	rjmp	.-4      	; 0x3cf4 <main+0x90>
+	return UART_DATA;
+    3cf8:	9c b1       	in	r25, 0x0c	; 12
+
+	for(;;) 
+	{
+		val = recvchar();
+		// Autoincrement?
+		if (val == 'a') 
+    3cfa:	91 36       	cpi	r25, 0x61	; 97
+    3cfc:	21 f4       	brne	.+8      	; 0x3d06 <main+0xa2>
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3cfe:	5d 9b       	sbis	0x0b, 5	; 11
+    3d00:	fe cf       	rjmp	.-4      	; 0x3cfe <main+0x9a>
+	UART_DATA = data;
+    3d02:	69 e5       	ldi	r22, 0x59	; 89
+    3d04:	2e c1       	rjmp	.+604    	; 0x3f62 <main+0x2fe>
+		{
+			sendchar('Y');			// Autoincrement is quicker
+
+		//write address
+		} 
+		else if (val == 'A') 
+    3d06:	91 34       	cpi	r25, 0x41	; 65
+    3d08:	79 f4       	brne	.+30     	; 0x3d28 <main+0xc4>
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+    3d0a:	5f 9b       	sbis	0x0b, 7	; 11
+    3d0c:	fe cf       	rjmp	.-4      	; 0x3d0a <main+0xa6>
+	return UART_DATA;
+    3d0e:	9c b1       	in	r25, 0x0c	; 12
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+    3d10:	5f 9b       	sbis	0x0b, 7	; 11
+    3d12:	fe cf       	rjmp	.-4      	; 0x3d10 <main+0xac>
+	return UART_DATA;
+    3d14:	8c b1       	in	r24, 0x0c	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3d16:	5d 9b       	sbis	0x0b, 5	; 11
+    3d18:	fe cf       	rjmp	.-4      	; 0x3d16 <main+0xb2>
+		//write address
+		} 
+		else if (val == 'A') 
+		{
+			address = recvchar();		//read address 8 MSB
+			address = (address<<8) | recvchar();
+    3d1a:	79 2e       	mov	r7, r25
+    3d1c:	66 24       	eor	r6, r6
+    3d1e:	a8 2e       	mov	r10, r24
+    3d20:	bb 24       	eor	r11, r11
+    3d22:	a6 28       	or	r10, r6
+    3d24:	b7 28       	or	r11, r7
+    3d26:	0d c1       	rjmp	.+538    	; 0x3f42 <main+0x2de>
+			sendchar('\r');
+
+		// Buffer load support
+		} 
+		else if (val == 'b') 
+    3d28:	92 36       	cpi	r25, 0x62	; 98
+    3d2a:	59 f4       	brne	.+22     	; 0x3d42 <main+0xde>
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3d2c:	5d 9b       	sbis	0x0b, 5	; 11
+    3d2e:	fe cf       	rjmp	.-4      	; 0x3d2c <main+0xc8>
+	UART_DATA = data;
+    3d30:	89 e5       	ldi	r24, 0x59	; 89
+    3d32:	8c b9       	out	0x0c, r24	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3d34:	5d 9b       	sbis	0x0b, 5	; 11
+    3d36:	fe cf       	rjmp	.-4      	; 0x3d34 <main+0xd0>
+	UART_DATA = data;
+    3d38:	1c b8       	out	0x0c, r1	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3d3a:	5d 9b       	sbis	0x0b, 5	; 11
+    3d3c:	fe cf       	rjmp	.-4      	; 0x3d3a <main+0xd6>
+	UART_DATA = data;
+    3d3e:	e0 e8       	ldi	r30, 0x80	; 128
+    3d40:	1e c1       	rjmp	.+572    	; 0x3f7e <main+0x31a>
+			sendchar((sizeof(gBuffer) >> 8) & 0xFF);	// Report buffer size in bytes
+			sendchar(sizeof(gBuffer) & 0xFF);
+
+		// Start buffer load
+		} 
+		else if (val == 'B') 
+    3d42:	92 34       	cpi	r25, 0x42	; 66
+    3d44:	09 f0       	breq	.+2      	; 0x3d48 <main+0xe4>
+    3d46:	6c c0       	rjmp	.+216    	; 0x3e20 <main+0x1bc>
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+    3d48:	5f 9b       	sbis	0x0b, 7	; 11
+    3d4a:	fe cf       	rjmp	.-4      	; 0x3d48 <main+0xe4>
+	return UART_DATA;
+    3d4c:	8c b1       	in	r24, 0x0c	; 12
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+    3d4e:	5f 9b       	sbis	0x0b, 7	; 11
+    3d50:	fe cf       	rjmp	.-4      	; 0x3d4e <main+0xea>
+	return UART_DATA;
+    3d52:	dc b0       	in	r13, 0x0c	; 12
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+    3d54:	5f 9b       	sbis	0x0b, 7	; 11
+    3d56:	fe cf       	rjmp	.-4      	; 0x3d54 <main+0xf0>
+	return UART_DATA;
+    3d58:	2c b1       	in	r18, 0x0c	; 12
+    3d5a:	80 e0       	ldi	r24, 0x00	; 0
+    3d5c:	e0 e6       	ldi	r30, 0x60	; 96
+    3d5e:	f0 e0       	ldi	r31, 0x00	; 0
+	pagebuf_t cnt;
+	uint8_t *tmp = gBuffer;
+
+	for (cnt = 0; cnt < sizeof(gBuffer); cnt++) 
+		{
+		*tmp++ = (cnt < size) ? recvchar() : 0xFF;
+    3d60:	8d 15       	cp	r24, r13
+    3d62:	10 f0       	brcs	.+4      	; 0x3d68 <main+0x104>
+    3d64:	9f ef       	ldi	r25, 0xFF	; 255
+    3d66:	03 c0       	rjmp	.+6      	; 0x3d6e <main+0x10a>
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+    3d68:	5f 9b       	sbis	0x0b, 7	; 11
+    3d6a:	fe cf       	rjmp	.-4      	; 0x3d68 <main+0x104>
+	return UART_DATA;
+    3d6c:	9c b1       	in	r25, 0x0c	; 12
+	pagebuf_t cnt;
+	uint8_t *tmp = gBuffer;
+
+	for (cnt = 0; cnt < sizeof(gBuffer); cnt++) 
+		{
+		*tmp++ = (cnt < size) ? recvchar() : 0xFF;
+    3d6e:	91 93       	st	Z+, r25
+static inline void recvBuffer(pagebuf_t size)
+{
+	pagebuf_t cnt;
+	uint8_t *tmp = gBuffer;
+
+	for (cnt = 0; cnt < sizeof(gBuffer); cnt++) 
+    3d70:	8f 5f       	subi	r24, 0xFF	; 255
+    3d72:	80 38       	cpi	r24, 0x80	; 128
+    3d74:	a9 f7       	brne	.-22     	; 0x3d60 <main+0xfc>
+			size = recvchar() << 8;				// Load high byte of buffersize
+			size |= recvchar();				// Load low byte of buffersize
+			val = recvchar();				// Load memory type ('E' or 'F')
+			recvBuffer(size);
+
+			if (device == DEVTYPE) 
+    3d76:	f5 e7       	ldi	r31, 0x75	; 117
+    3d78:	5f 16       	cp	r5, r31
+    3d7a:	09 f0       	breq	.+2      	; 0x3d7e <main+0x11a>
+    3d7c:	4e c0       	rjmp	.+156    	; 0x3e1a <main+0x1b6>
+			{
+				if (val == 'F') 
+    3d7e:	26 34       	cpi	r18, 0x46	; 70
+    3d80:	09 f0       	breq	.+2      	; 0x3d84 <main+0x120>
+    3d82:	34 c0       	rjmp	.+104    	; 0x3dec <main+0x188>
+		}
+}
+
+static inline uint16_t writeFlashPage(uint16_t waddr, pagebuf_t size)
+{
+	uint32_t pagestart = (uint32_t)waddr<<1;
+    3d84:	75 01       	movw	r14, r10
+    3d86:	00 e0       	ldi	r16, 0x00	; 0
+    3d88:	10 e0       	ldi	r17, 0x00	; 0
+    3d8a:	ee 0c       	add	r14, r14
+    3d8c:	ff 1c       	adc	r15, r15
+    3d8e:	00 1f       	adc	r16, r16
+    3d90:	11 1f       	adc	r17, r17
+    3d92:	a8 01       	movw	r20, r16
+    3d94:	97 01       	movw	r18, r14
+    3d96:	a0 e6       	ldi	r26, 0x60	; 96
+    3d98:	b0 e0       	ldi	r27, 0x00	; 0
+	uint16_t data;
+	uint8_t *tmp = gBuffer;
+
+	do 
+		{
+		data = *tmp++;
+    3d9a:	8c 91       	ld	r24, X
+    3d9c:	90 e0       	ldi	r25, 0x00	; 0
+		data |= *tmp++ << 8;
+    3d9e:	11 96       	adiw	r26, 0x01	; 1
+    3da0:	9c 90       	ld	r9, X
+    3da2:	11 97       	sbiw	r26, 0x01	; 1
+    3da4:	88 24       	eor	r8, r8
+    3da6:	88 29       	or	r24, r8
+    3da8:	99 29       	or	r25, r9
+}
+
+static void (*jump_to_app)(void) = 0x0000;
+
+int main(void)
+{
+    3daa:	12 96       	adiw	r26, 0x02	; 2
+
+	do 
+		{
+		data = *tmp++;
+		data |= *tmp++ << 8;
+		boot_page_fill(baddr, data);	// call asm routine.
+    3dac:	61 e0       	ldi	r22, 0x01	; 1
+    3dae:	f9 01       	movw	r30, r18
+    3db0:	0c 01       	movw	r0, r24
+    3db2:	60 93 57 00 	sts	0x0057, r22
+    3db6:	e8 95       	spm
+    3db8:	11 24       	eor	r1, r1
+
+		baddr += 2;			// Select next word in memory
+    3dba:	2e 5f       	subi	r18, 0xFE	; 254
+    3dbc:	3f 4f       	sbci	r19, 0xFF	; 255
+    3dbe:	4f 4f       	sbci	r20, 0xFF	; 255
+    3dc0:	5f 4f       	sbci	r21, 0xFF	; 255
+		size -= 2;			// Reduce number of bytes to write by two
+    3dc2:	8e ef       	ldi	r24, 0xFE	; 254
+    3dc4:	d8 0e       	add	r13, r24
+		} 
+	while (size);				// Loop until all bytes written
+    3dc6:	49 f7       	brne	.-46     	; 0x3d9a <main+0x136>
+
+	boot_page_write(pagestart);
+    3dc8:	65 e0       	ldi	r22, 0x05	; 5
+    3dca:	f7 01       	movw	r30, r14
+    3dcc:	60 93 57 00 	sts	0x0057, r22
+    3dd0:	e8 95       	spm
+	boot_spm_busy_wait();
+    3dd2:	07 b6       	in	r0, 0x37	; 55
+    3dd4:	00 fc       	sbrc	r0, 0
+    3dd6:	fd cf       	rjmp	.-6      	; 0x3dd2 <main+0x16e>
+	boot_rww_enable();		// Re-enable the RWW section
+    3dd8:	81 e1       	ldi	r24, 0x11	; 17
+    3dda:	80 93 57 00 	sts	0x0057, r24
+    3dde:	e8 95       	spm
+
+	return baddr>>1;
+    3de0:	56 95       	lsr	r21
+    3de2:	47 95       	ror	r20
+    3de4:	37 95       	ror	r19
+    3de6:	27 95       	ror	r18
+    3de8:	59 01       	movw	r10, r18
+    3dea:	14 c0       	rjmp	.+40     	; 0x3e14 <main+0x1b0>
+			{
+				if (val == 'F') 
+				{
+				address = writeFlashPage(address, size);
+				} 
+				else if (val == 'E') 
+    3dec:	25 34       	cpi	r18, 0x45	; 69
+    3dee:	91 f4       	brne	.+36     	; 0x3e14 <main+0x1b0>
+    3df0:	fd 2c       	mov	r15, r13
+    3df2:	85 01       	movw	r16, r10
+    3df4:	c0 e6       	ldi	r28, 0x60	; 96
+    3df6:	d0 e0       	ldi	r29, 0x00	; 0
+{
+	uint8_t *tmp = gBuffer;
+
+	do 
+		{
+		eeprom_write_byte( (uint8_t*)address, *tmp++ );
+    3df8:	69 91       	ld	r22, Y+
+    3dfa:	c8 01       	movw	r24, r16
+    3dfc:	0e 94 d1 1f 	call	0x3fa2	; 0x3fa2 <__eewr_byte_m16>
+		address++;			// Select next byte
+    3e00:	0f 5f       	subi	r16, 0xFF	; 255
+    3e02:	1f 4f       	sbci	r17, 0xFF	; 255
+		size--;				// Decreas number of bytes to write
+    3e04:	fa 94       	dec	r15
+		}
+	while (size);				// Loop until all bytes written
+    3e06:	c1 f7       	brne	.-16     	; 0x3df8 <main+0x194>
+    3e08:	da 94       	dec	r13
+    3e0a:	8d 2d       	mov	r24, r13
+    3e0c:	90 e0       	ldi	r25, 0x00	; 0
+    3e0e:	01 96       	adiw	r24, 0x01	; 1
+    3e10:	a8 0e       	add	r10, r24
+    3e12:	b9 1e       	adc	r11, r25
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3e14:	5d 9b       	sbis	0x0b, 5	; 11
+    3e16:	fe cf       	rjmp	.-4      	; 0x3e14 <main+0x1b0>
+    3e18:	94 c0       	rjmp	.+296    	; 0x3f42 <main+0x2de>
+    3e1a:	5d 9b       	sbis	0x0b, 5	; 11
+    3e1c:	fe cf       	rjmp	.-4      	; 0x3e1a <main+0x1b6>
+    3e1e:	7e c0       	rjmp	.+252    	; 0x3f1c <main+0x2b8>
+			sendchar(0);
+			}
+
+		// Block read
+		} 
+		else if (val == 'g') 
+    3e20:	97 36       	cpi	r25, 0x67	; 103
+    3e22:	09 f0       	breq	.+2      	; 0x3e26 <main+0x1c2>
+    3e24:	3d c0       	rjmp	.+122    	; 0x3ea0 <main+0x23c>
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+    3e26:	5f 9b       	sbis	0x0b, 7	; 11
+    3e28:	fe cf       	rjmp	.-4      	; 0x3e26 <main+0x1c2>
+	return UART_DATA;
+    3e2a:	8c b1       	in	r24, 0x0c	; 12
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+    3e2c:	5f 9b       	sbis	0x0b, 7	; 11
+    3e2e:	fe cf       	rjmp	.-4      	; 0x3e2c <main+0x1c8>
+	return UART_DATA;
+    3e30:	fc b0       	in	r15, 0x0c	; 12
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+    3e32:	5f 9b       	sbis	0x0b, 7	; 11
+    3e34:	fe cf       	rjmp	.-4      	; 0x3e32 <main+0x1ce>
+	return UART_DATA;
+    3e36:	8c b1       	in	r24, 0x0c	; 12
+			pagebuf_t size;
+			size = recvchar() << 8;				// Load high byte of buffersize
+			size |= recvchar();				// Load low byte of buffersize
+			val = recvchar();				// Get memtype
+
+			if (val == 'F') 
+    3e38:	86 34       	cpi	r24, 0x46	; 70
+    3e3a:	e1 f4       	brne	.+56     	; 0x3e74 <main+0x210>
+	return address;
+}
+
+static inline uint16_t readFlashPage(uint16_t waddr, pagebuf_t size)
+{
+	uint32_t baddr = (uint32_t)waddr<<1;
+    3e3c:	c5 01       	movw	r24, r10
+    3e3e:	a0 e0       	ldi	r26, 0x00	; 0
+    3e40:	b0 e0       	ldi	r27, 0x00	; 0
+    3e42:	88 0f       	add	r24, r24
+    3e44:	99 1f       	adc	r25, r25
+    3e46:	aa 1f       	adc	r26, r26
+    3e48:	bb 1f       	adc	r27, r27
+#warning "Bootloader not read-protected"
+
+	#if defined(RAMPZ)
+		data = pgm_read_word_far(baddr);
+	#else
+		data = pgm_read_word_near(baddr);
+    3e4a:	fc 01       	movw	r30, r24
+    3e4c:	25 91       	lpm	r18, Z+
+    3e4e:	34 91       	lpm	r19, Z+
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3e50:	5d 9b       	sbis	0x0b, 5	; 11
+    3e52:	fe cf       	rjmp	.-4      	; 0x3e50 <main+0x1ec>
+	UART_DATA = data;
+    3e54:	2c b9       	out	0x0c, r18	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3e56:	5d 9b       	sbis	0x0b, 5	; 11
+    3e58:	fe cf       	rjmp	.-4      	; 0x3e56 <main+0x1f2>
+	UART_DATA = data;
+    3e5a:	3c b9       	out	0x0c, r19	; 12
+		data = 0xFFFF; // fake empty
+		}
+#endif
+		sendchar(data);			// send LSB
+		sendchar((data >> 8));		// send MSB
+		baddr += 2;			// Select next word in memory
+    3e5c:	02 96       	adiw	r24, 0x02	; 2
+    3e5e:	a1 1d       	adc	r26, r1
+    3e60:	b1 1d       	adc	r27, r1
+		size -= 2;			// Subtract two bytes from number of bytes to read
+    3e62:	ee ef       	ldi	r30, 0xFE	; 254
+    3e64:	fe 0e       	add	r15, r30
+	} 
+	while (size);				// Repeat until block has been read
+    3e66:	89 f7       	brne	.-30     	; 0x3e4a <main+0x1e6>
+	return baddr>>1;
+    3e68:	b6 95       	lsr	r27
+    3e6a:	a7 95       	ror	r26
+    3e6c:	97 95       	ror	r25
+    3e6e:	87 95       	ror	r24
+    3e70:	5c 01       	movw	r10, r24
+    3e72:	40 cf       	rjmp	.-384    	; 0x3cf4 <main+0x90>
+
+			if (val == 'F') 
+			{
+			address = readFlashPage(address, size);
+			} 
+			else if (val == 'E') 
+    3e74:	85 34       	cpi	r24, 0x45	; 69
+    3e76:	09 f0       	breq	.+2      	; 0x3e7a <main+0x216>
+    3e78:	3d cf       	rjmp	.-390    	; 0x3cf4 <main+0x90>
+    3e7a:	ef 2c       	mov	r14, r15
+    3e7c:	85 01       	movw	r16, r10
+
+static inline uint16_t readEEpromPage(uint16_t address, pagebuf_t size)
+{
+	do 
+	{
+	sendchar( eeprom_read_byte( (uint8_t*)address ) );
+    3e7e:	c8 01       	movw	r24, r16
+    3e80:	0e 94 c9 1f 	call	0x3f92	; 0x3f92 <__eerd_byte_m16>
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3e84:	5d 9b       	sbis	0x0b, 5	; 11
+    3e86:	fe cf       	rjmp	.-4      	; 0x3e84 <main+0x220>
+	UART_DATA = data;
+    3e88:	8c b9       	out	0x0c, r24	; 12
+static inline uint16_t readEEpromPage(uint16_t address, pagebuf_t size)
+{
+	do 
+	{
+	sendchar( eeprom_read_byte( (uint8_t*)address ) );
+	address++;
+    3e8a:	0f 5f       	subi	r16, 0xFF	; 255
+    3e8c:	1f 4f       	sbci	r17, 0xFF	; 255
+	size--;				// Decrease number of bytes to read
+    3e8e:	ea 94       	dec	r14
+	} 
+	while (size);				// Repeat until block has been read
+    3e90:	b1 f7       	brne	.-20     	; 0x3e7e <main+0x21a>
+    3e92:	fa 94       	dec	r15
+    3e94:	8f 2d       	mov	r24, r15
+    3e96:	90 e0       	ldi	r25, 0x00	; 0
+    3e98:	01 96       	adiw	r24, 0x01	; 1
+    3e9a:	a8 0e       	add	r10, r24
+    3e9c:	b9 1e       	adc	r11, r25
+    3e9e:	2a cf       	rjmp	.-428    	; 0x3cf4 <main+0x90>
+			address = readEEpromPage(address, size);
+			}
+
+		// Chip erase
+ 		} 
+		else if (val == 'e') 
+    3ea0:	95 36       	cpi	r25, 0x65	; 101
+    3ea2:	c1 f4       	brne	.+48     	; 0x3ed4 <main+0x270>
+		{
+		if (device == DEVTYPE) 
+    3ea4:	f5 e7       	ldi	r31, 0x75	; 117
+    3ea6:	5f 16       	cp	r5, r31
+    3ea8:	91 f4       	brne	.+36     	; 0x3ece <main+0x26a>
+    3eaa:	e0 e0       	ldi	r30, 0x00	; 0
+    3eac:	f0 e0       	ldi	r31, 0x00	; 0
+{
+	// erase only main section (bootloader protection)
+	uint32_t addr = 0;
+	while (APP_END > addr) 
+		{
+		boot_page_erase(addr);		// Perform page erase
+    3eae:	40 92 57 00 	sts	0x0057, r4
+    3eb2:	e8 95       	spm
+		boot_spm_busy_wait();		// Wait until the memory is erased.
+    3eb4:	07 b6       	in	r0, 0x37	; 55
+    3eb6:	00 fc       	sbrc	r0, 0
+    3eb8:	fd cf       	rjmp	.-6      	; 0x3eb4 <main+0x250>
+    3eba:	e0 58       	subi	r30, 0x80	; 128
+    3ebc:	ff 4f       	sbci	r31, 0xFF	; 255
+
+static inline void eraseFlash(void)
+{
+	// erase only main section (bootloader protection)
+	uint32_t addr = 0;
+	while (APP_END > addr) 
+    3ebe:	2c e3       	ldi	r18, 0x3C	; 60
+    3ec0:	e0 30       	cpi	r30, 0x00	; 0
+    3ec2:	f2 07       	cpc	r31, r18
+    3ec4:	a1 f7       	brne	.-24     	; 0x3eae <main+0x24a>
+		{
+		boot_page_erase(addr);		// Perform page erase
+		boot_spm_busy_wait();		// Wait until the memory is erased.
+		addr += SPM_PAGESIZE;
+		}
+	boot_rww_enable();
+    3ec6:	61 e1       	ldi	r22, 0x11	; 17
+    3ec8:	60 93 57 00 	sts	0x0057, r22
+    3ecc:	e8 95       	spm
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3ece:	5d 9b       	sbis	0x0b, 5	; 11
+    3ed0:	fe cf       	rjmp	.-4      	; 0x3ece <main+0x26a>
+    3ed2:	37 c0       	rjmp	.+110    	; 0x3f42 <main+0x2de>
+			}
+		sendchar('\r');
+
+		// Exit upgrade
+		} 
+		else if (val == 'E') 
+    3ed4:	95 34       	cpi	r25, 0x45	; 69
+    3ed6:	51 f4       	brne	.+20     	; 0x3eec <main+0x288>
+		{
+		wdt_enable(EXIT_WDT_TIME); // Enable Watchdog Timer to give reset
+    3ed8:	8c e0       	ldi	r24, 0x0C	; 12
+    3eda:	0f b6       	in	r0, 0x3f	; 63
+    3edc:	f8 94       	cli
+    3ede:	a8 95       	wdr
+    3ee0:	21 bc       	out	0x21, r2	; 33
+    3ee2:	0f be       	out	0x3f, r0	; 63
+    3ee4:	81 bd       	out	0x21, r24	; 33
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3ee6:	5d 9b       	sbis	0x0b, 5	; 11
+    3ee8:	fe cf       	rjmp	.-4      	; 0x3ee6 <main+0x282>
+    3eea:	2b c0       	rjmp	.+86     	; 0x3f42 <main+0x2de>
+				}
+			sendchar('\r');
+		#endif
+		// Enter programming mode
+		} 
+		else if (val == 'P') 
+    3eec:	90 35       	cpi	r25, 0x50	; 80
+    3eee:	19 f4       	brne	.+6      	; 0x3ef6 <main+0x292>
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3ef0:	5d 9b       	sbis	0x0b, 5	; 11
+    3ef2:	fe cf       	rjmp	.-4      	; 0x3ef0 <main+0x28c>
+    3ef4:	26 c0       	rjmp	.+76     	; 0x3f42 <main+0x2de>
+		{
+		sendchar('\r');
+
+		// Leave programming mode
+		} 
+		else if (val == 'L') 
+    3ef6:	9c 34       	cpi	r25, 0x4C	; 76
+    3ef8:	19 f4       	brne	.+6      	; 0x3f00 <main+0x29c>
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3efa:	5d 9b       	sbis	0x0b, 5	; 11
+    3efc:	fe cf       	rjmp	.-4      	; 0x3efa <main+0x296>
+    3efe:	21 c0       	rjmp	.+66     	; 0x3f42 <main+0x2de>
+		else if (val == 'L') 
+		{
+		sendchar('\r');
+		// return programmer type
+		} 
+		else if (val == 'p') 
+    3f00:	90 37       	cpi	r25, 0x70	; 112
+    3f02:	21 f4       	brne	.+8      	; 0x3f0c <main+0x2a8>
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3f04:	5d 9b       	sbis	0x0b, 5	; 11
+    3f06:	fe cf       	rjmp	.-4      	; 0x3f04 <main+0x2a0>
+	UART_DATA = data;
+    3f08:	e3 e5       	ldi	r30, 0x53	; 83
+    3f0a:	39 c0       	rjmp	.+114    	; 0x3f7e <main+0x31a>
+			sendchar(read_fuse_lock(GET_EXTENDED_FUSE_BITS));
+			#endif
+
+		// Return device type
+		} 
+		else if (val == 't') 
+    3f0c:	94 37       	cpi	r25, 0x74	; 116
+    3f0e:	41 f4       	brne	.+16     	; 0x3f20 <main+0x2bc>
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3f10:	5d 9b       	sbis	0x0b, 5	; 11
+    3f12:	fe cf       	rjmp	.-4      	; 0x3f10 <main+0x2ac>
+	UART_DATA = data;
+    3f14:	f5 e7       	ldi	r31, 0x75	; 117
+    3f16:	fc b9       	out	0x0c, r31	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3f18:	5d 9b       	sbis	0x0b, 5	; 11
+    3f1a:	fe cf       	rjmp	.-4      	; 0x3f18 <main+0x2b4>
+	UART_DATA = data;
+    3f1c:	1c b8       	out	0x0c, r1	; 12
+    3f1e:	ea ce       	rjmp	.-556    	; 0x3cf4 <main+0x90>
+		{
+		sendchar(DEVTYPE);
+		sendchar(0);
+		// clear and set LED ignored
+		} 
+		else if ((val == 'x') || (val == 'y')) 
+    3f20:	89 2f       	mov	r24, r25
+    3f22:	88 57       	subi	r24, 0x78	; 120
+    3f24:	82 30       	cpi	r24, 0x02	; 2
+    3f26:	30 f4       	brcc	.+12     	; 0x3f34 <main+0x2d0>
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+    3f28:	5f 9b       	sbis	0x0b, 7	; 11
+    3f2a:	fe cf       	rjmp	.-4      	; 0x3f28 <main+0x2c4>
+	return UART_DATA;
+    3f2c:	8c b1       	in	r24, 0x0c	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3f2e:	5d 9b       	sbis	0x0b, 5	; 11
+    3f30:	fe cf       	rjmp	.-4      	; 0x3f2e <main+0x2ca>
+    3f32:	07 c0       	rjmp	.+14     	; 0x3f42 <main+0x2de>
+		recvchar();
+		sendchar('\r');
+
+		// set device
+		} 
+		else if (val == 'T') 
+    3f34:	94 35       	cpi	r25, 0x54	; 84
+    3f36:	39 f4       	brne	.+14     	; 0x3f46 <main+0x2e2>
+	UART_DATA = data;
+}
+
+static uint8_t recvchar(void)
+{
+	while (!(UART_STATUS & (1<<UART_RXREADY)));
+    3f38:	5f 9b       	sbis	0x0b, 7	; 11
+    3f3a:	fe cf       	rjmp	.-4      	; 0x3f38 <main+0x2d4>
+	return UART_DATA;
+    3f3c:	5c b0       	in	r5, 0x0c	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3f3e:	5d 9b       	sbis	0x0b, 5	; 11
+    3f40:	fe cf       	rjmp	.-4      	; 0x3f3e <main+0x2da>
+	UART_DATA = data;
+    3f42:	cc b8       	out	0x0c, r12	; 12
+    3f44:	d7 ce       	rjmp	.-594    	; 0x3cf4 <main+0x90>
+		{
+		device = recvchar();
+		sendchar('\r');
+		// Return software identifier
+		} 
+		else if (val == 'S') 
+    3f46:	93 35       	cpi	r25, 0x53	; 83
+    3f48:	19 f4       	brne	.+6      	; 0x3f50 <main+0x2ec>
+		{
+		send_boot();
+    3f4a:	0e 94 15 1e 	call	0x3c2a	; 0x3c2a <send_boot>
+    3f4e:	d2 ce       	rjmp	.-604    	; 0x3cf4 <main+0x90>
+
+		// Return Software Version
+		} 
+		else if (val == 'V') {
+    3f50:	96 35       	cpi	r25, 0x56	; 86
+    3f52:	49 f4       	brne	.+18     	; 0x3f66 <main+0x302>
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3f54:	5d 9b       	sbis	0x0b, 5	; 11
+    3f56:	fe cf       	rjmp	.-4      	; 0x3f54 <main+0x2f0>
+	UART_DATA = data;
+    3f58:	20 e3       	ldi	r18, 0x30	; 48
+    3f5a:	2c b9       	out	0x0c, r18	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3f5c:	5d 9b       	sbis	0x0b, 5	; 11
+    3f5e:	fe cf       	rjmp	.-4      	; 0x3f5c <main+0x2f8>
+	UART_DATA = data;
+    3f60:	68 e3       	ldi	r22, 0x38	; 56
+    3f62:	6c b9       	out	0x0c, r22	; 12
+    3f64:	c7 ce       	rjmp	.-626    	; 0x3cf4 <main+0x90>
+
+		// Return Signature Bytes (it seems that 
+		// AVRProg expects the "Atmel-byte" 0x1E last
+		// but shows it first in the dialog-window)
+		} 
+		else if (val == 's') 
+    3f66:	93 37       	cpi	r25, 0x73	; 115
+    3f68:	61 f4       	brne	.+24     	; 0x3f82 <main+0x31e>
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3f6a:	5d 9b       	sbis	0x0b, 5	; 11
+    3f6c:	fe cf       	rjmp	.-4      	; 0x3f6a <main+0x306>
+	UART_DATA = data;
+    3f6e:	4c b8       	out	0x0c, r4	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3f70:	5d 9b       	sbis	0x0b, 5	; 11
+    3f72:	fe cf       	rjmp	.-4      	; 0x3f70 <main+0x30c>
+	UART_DATA = data;
+    3f74:	84 e9       	ldi	r24, 0x94	; 148
+    3f76:	8c b9       	out	0x0c, r24	; 12
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3f78:	5d 9b       	sbis	0x0b, 5	; 11
+    3f7a:	fe cf       	rjmp	.-4      	; 0x3f78 <main+0x314>
+	UART_DATA = data;
+    3f7c:	ee e1       	ldi	r30, 0x1E	; 30
+    3f7e:	ec b9       	out	0x0c, r30	; 12
+    3f80:	b9 ce       	rjmp	.-654    	; 0x3cf4 <main+0x90>
+		sendchar(SIG_BYTE2);
+		sendchar(SIG_BYTE1);
+
+		/* ESC */
+		} 
+		else if(val != 0x1b) 
+    3f82:	9b 31       	cpi	r25, 0x1B	; 27
+    3f84:	09 f4       	brne	.+2      	; 0x3f88 <main+0x324>
+    3f86:	b6 ce       	rjmp	.-660    	; 0x3cf4 <main+0x90>
+	void __vector_default(void) { ; }
+#endif
+
+static void sendchar(uint8_t data)
+{
+	while (!(UART_STATUS & (1<<UART_TXREADY)));
+    3f88:	5d 9b       	sbis	0x0b, 5	; 11
+    3f8a:	fe cf       	rjmp	.-4      	; 0x3f88 <main+0x324>
+	UART_DATA = data;
+    3f8c:	ff e3       	ldi	r31, 0x3F	; 63
+    3f8e:	fc b9       	out	0x0c, r31	; 12
+    3f90:	b1 ce       	rjmp	.-670    	; 0x3cf4 <main+0x90>
+
+00003f92 <__eerd_byte_m16>:
+    3f92:	e1 99       	sbic	0x1c, 1	; 28
+    3f94:	fe cf       	rjmp	.-4      	; 0x3f92 <__eerd_byte_m16>
+    3f96:	9f bb       	out	0x1f, r25	; 31
+    3f98:	8e bb       	out	0x1e, r24	; 30
+    3f9a:	e0 9a       	sbi	0x1c, 0	; 28
+    3f9c:	99 27       	eor	r25, r25
+    3f9e:	8d b3       	in	r24, 0x1d	; 29
+    3fa0:	08 95       	ret
+
+00003fa2 <__eewr_byte_m16>:
+    3fa2:	26 2f       	mov	r18, r22
+
+00003fa4 <__eewr_r18_m16>:
+    3fa4:	e1 99       	sbic	0x1c, 1	; 28
+    3fa6:	fe cf       	rjmp	.-4      	; 0x3fa4 <__eewr_r18_m16>
+    3fa8:	9f bb       	out	0x1f, r25	; 31
+    3faa:	8e bb       	out	0x1e, r24	; 30
+    3fac:	2d bb       	out	0x1d, r18	; 29
+    3fae:	0f b6       	in	r0, 0x3f	; 63
+    3fb0:	f8 94       	cli
+    3fb2:	e2 9a       	sbi	0x1c, 2	; 28
+    3fb4:	e1 9a       	sbi	0x1c, 1	; 28
+    3fb6:	0f be       	out	0x3f, r0	; 63
+    3fb8:	01 96       	adiw	r24, 0x01	; 1
+    3fba:	08 95       	ret
+
+00003fbc <_exit>:
+    3fbc:	f8 94       	cli
+
+00003fbe <__stop_program>:
+    3fbe:	ff cf       	rjmp	.-2      	; 0x3fbe <__stop_program>
