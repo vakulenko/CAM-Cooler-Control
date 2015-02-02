@@ -119,7 +119,7 @@ void init_pwm (void)
 	PWM_PORT&=~(1<<PWM_PIN);
 	PWM_DDR|=(1<<PWM_PIN);
 
-	TCCR1A|=(1<<COM1A1)|(1<<WGM10);
+	TCCR1A|=(1<<WGM10);
 	TCCR1B|=(1<<WGM12)|(1<<CS10);
 
 	OCR1AL=0x00;
@@ -415,7 +415,7 @@ int main(void)
 
 	//init variables
 	for (i=0;i<SENSOR_COUNT;i++)
-	sensor_data[i]=OFFSET;
+	sensor_data[i]=0;
 
 	clear_buf ();
 

@@ -28,10 +28,23 @@ namespace cooler_control_01
         private byte[] set_cmd = { 0x73, 0x00, 0x00, 0x00 };
         private byte[] pwm_cmd = { 0x70, 0x00, 0x00 };
 
+        private const int baudrate = 9600;
+
+        private const string settings_filename = "cooler_settings.xml";
+
+        private const byte buffer_size = 11;
+        private const byte responce_packet_size = 11;
+        private const byte info_packet_size = 6;
+
         private const byte HWREV = 0x01;
         private const byte SWREV = 0x01;
         private const byte SENSOR_CNT = 0x02;
         private const byte VAL_CNT = 0x01;
+
+        private const int low_set_temp = -50;
+        private const int high_set_temp = 50;
+
+        private const int temp_offset = 128;
 
         private const byte _ON = 0x01;
         private const byte _OFF = 0x00;
@@ -39,9 +52,13 @@ namespace cooler_control_01
         private static byte timer_state=0;
         private System.Windows.Forms.Timer get_timer = null;
 
+        byte[] rx_buf;
+
         public main_form()
         {
             InitializeComponent();
+
+            rx_buf = new byte[buffer_size];
 
             get_timer = new System.Windows.Forms.Timer();
             get_timer.Interval = 1000;
@@ -49,18 +66,18 @@ namespace cooler_control_01
             get_timer.Enabled = false;
 
             //extract port, temperature settings
-            if (File.Exists("cooler_settings.xml"))
+            if (File.Exists(settings_filename))
             {
                 try
                 {
-                    using (Stream stream = new FileStream("cooler_settings.xml", FileMode.Open))
+                    using (Stream stream = new FileStream(settings_filename, FileMode.Open))
                     {
                         XmlSerializer serializer = new XmlSerializer(typeof(iniSettings));
 
                         iniSettings pid_settings = (iniSettings)serializer.Deserialize(stream);
                         //check port, temperature validity
                         if ((pid_settings.port < 0) || (pid_settings.port > 16)) pid_settings.port = 0;
-                        if ((pid_settings.set_temp < -50) || (pid_settings.set_temp > 50)) pid_settings.set_temp = 0;
+                        if ((pid_settings.set_temp < low_set_temp) || (pid_settings.set_temp > high_set_temp)) pid_settings.set_temp = 0;
 
                         port_combobox.SelectedIndex = pid_settings.port;
                         settemp_textbox.Text = pid_settings.set_temp.ToString("F1");
@@ -69,7 +86,7 @@ namespace cooler_control_01
                 }
                 catch
                 {
-                    System.Windows.Forms.MessageBox.Show("cooler_settings.xml damaged, use settings by default.");
+                    System.Windows.Forms.MessageBox.Show(settings_filename+" damaged, use settings by default.");
                     port_combobox.SelectedIndex = 0;
                     settemp_textbox.Text = "0,0";
                     set_temp = 0.0;
@@ -86,7 +103,7 @@ namespace cooler_control_01
             }
             else
             {
-                read_packet();
+                if (read_packet() == 0) serialport.DiscardInBuffer();                
                 timer_state = 0;
             }
         }
@@ -101,9 +118,8 @@ namespace cooler_control_01
                     return;
                 }
 
-                serialport = new SerialPort(port_combobox.SelectedItem.ToString(), 9600, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
-
-
+                serialport = new SerialPort(port_combobox.SelectedItem.ToString(), baudrate, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One);
+                
                 try
                 {
                     serialport.Open();
@@ -166,14 +182,14 @@ namespace cooler_control_01
                 System.Windows.Forms.MessageBox.Show("Wrong desired temperature.");
                 return;
             }
-            if ((set_temp < -50) || (set_temp > 50))
+            if ((set_temp < low_set_temp) || (set_temp > high_set_temp))
             {
-                System.Windows.Forms.MessageBox.Show("Too large/small desired temperature. Correct range is [-50;50]");
+                System.Windows.Forms.MessageBox.Show("Too large/small desired temperature. Correct range is ["+low_set_temp.ToString()+";"+high_set_temp.ToString()+"]");
                 return;
             }
 
             set_temp = Math.Truncate(set_temp * 10) / 10;
-            tmp = (short)((set_temp + 128) * 10);
+            tmp = (short)((set_temp + temp_offset) * 10);
 
             set_cmd[1] = (byte)((tmp >> 8) & 0x00ff);
             set_cmd[2] = (byte)(tmp & 0x00ff);
@@ -195,7 +211,7 @@ namespace cooler_control_01
             iniSettings pid_settings = new iniSettings();
             pid_settings.port = port_combobox.SelectedIndex;
             pid_settings.set_temp = set_temp;
-            using (Stream writer = new FileStream("cooler_settings.xml", FileMode.Create))
+            using (Stream writer = new FileStream(settings_filename, FileMode.Create))
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(iniSettings));
                 serializer.Serialize(writer, pid_settings);
@@ -225,9 +241,8 @@ namespace cooler_control_01
         private byte read_packet()
         {
             byte crc;
-            byte[] rx_buf = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-            if ((serialport.BytesToRead != 11)&&(serialport.BytesToRead!=6)) return 0;
+            if ((serialport.BytesToRead != responce_packet_size) && (serialport.BytesToRead != info_packet_size)) return 0;
             serialport.Read(rx_buf, 0, serialport.BytesToRead);
             crc = crc8_block(rx_buf, (byte)(rx_buf.Length - 1));
             if (rx_buf[rx_buf.Length - 1] != crc) return 0;
@@ -240,9 +255,9 @@ namespace cooler_control_01
                             break;
                             };
                 case 0x64:  {
-                            sensor_temp = (((rx_buf[1] << 8) | (rx_buf[2])) - 1280.0) / 10.0;
-                            air_temp = (((rx_buf[3] << 8) | (rx_buf[4])) - 1280.0) / 10.0;
-                            val_temp = (((rx_buf[5] << 8) | (rx_buf[6]))-1280.0)/10.0;
+                            sensor_temp = (((rx_buf[1] << 8) | (rx_buf[2])) - temp_offset*10) / 10.0;
+                            air_temp = (((rx_buf[3] << 8) | (rx_buf[4])) - temp_offset * 10) / 10.0;
+                            val_temp = (((rx_buf[5] << 8) | (rx_buf[6])) - temp_offset * 10) / 10.0;
 
                             pwm = rx_buf[7];
                             err_code = rx_buf[8];
