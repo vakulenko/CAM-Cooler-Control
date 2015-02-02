@@ -168,7 +168,7 @@ namespace cooler_control_01
             }
             if ((set_temp < -50) || (set_temp > 50))
             {
-                System.Windows.Forms.MessageBox.Show("Too large/small desired temperature.");
+                System.Windows.Forms.MessageBox.Show("Too large/small desired temperature. Correct range is [-50;50]");
                 return;
             }
 

@@ -11,6 +11,9 @@
 #define SW_REVISION		1
 #define OFFSET 			1280
 
+#define _YES			1
+#define	_NO				0
+
 //temp sensors
 #define SENSOR_PORT	PORTC
 #define SENSOR_DDR	DDRC
@@ -139,12 +142,10 @@ void on_pwm()
 void set_pwm (uint8_t data)
 {
 	OCR1AL=data;
-
 	if (data==0) off_pwm();
 	else on_pwm();
 
 	return;
-
 }
 
 uint8_t get_pwm (void)
@@ -405,7 +406,7 @@ uint16_t receive_ds18b20(uint8_t sensor_num)
 
 int main(void)
 {
-	uint8_t i, sign;
+	uint8_t i, sign, first_conv=_YES;
 	uint16_t val, fract;
 	
 	//read from EEPROM saved value & PWM state
@@ -414,7 +415,7 @@ int main(void)
 
 	//init variables
 	for (i=0;i<SENSOR_COUNT;i++)
-	sensor_data[i]=0;
+	sensor_data[i]=OFFSET;
 
 	clear_buf ();
 
@@ -434,84 +435,92 @@ int main(void)
 	{
 
 		_delay_loop_2(0xffff);
+
+		//delay 10ms
+		//_delay_ms(10);
 		i++;
 
 		if (packet_received!=0) process_packet();
 
 		if (i>=35)
 		{
-		i=0;
+			i=0;
 
-		//send command from start measurement to sensors
-		error_code=0;
-		for (i=0;i<SENSOR_COUNT;i++)
-		{
-			if (present_ds18b20(i)==1)
+			//send command from start measurement to sensors
+			error_code=0;
+			for (i=0;i<SENSOR_COUNT;i++)
 			{
-				send_ds18b20(SKIP_ROM,i);
-				send_ds18b20(START_CONVERSION,i);
-				error_code=0;
-			}
-			else error_code|=(1<<i);
-		}
-		 
-		//receive measured data from sensors
-		for (i=0;i<SENSOR_COUNT;i++)
-		{
-			if (present_ds18b20(i)==1)
-			{
-				send_ds18b20(SKIP_ROM,i);
-				send_ds18b20(GET_DATA,i);
-				val=receive_ds18b20(i);
-
-				if ((val&0x8000)!=0x00)
+				if (present_ds18b20(i)==1)
 				{
-					sign=1;
-					val=0xffff-val+1;
+					send_ds18b20(SKIP_ROM,i);
+					send_ds18b20(START_CONVERSION,i);
+					error_code=0;
 				}
-				else sign=0;
-
-				fract=0;
-				if ((val&0x01)!=0x00) fract=fract+65;
-				if ((val&0x02)!=0x00) fract=fract+125;
-				if ((val&0x04)!=0x00) fract=fract+250;
-				if ((val&0x08)!=0x00) fract=fract+500;
-
-				val=(val>>4)*10+fract/100;
-
-				if (sign==1) val=OFFSET-val;
-				else val=val+OFFSET;
-
-				sensor_data[i]=val;
+				else error_code|=(1<<i);
 			}
-			else error_code|=(1<<i);
-		}
 
-		//if PWM if OFF - clear all variables and off PWM
-		if (pwm_state==PWM_OFF)
-		{
-			off_pwm();
-			set_pwm(0x00);
-			U=0.0;
-			E=0.0;
-			correction=0;
-		}
-		else on_pwm();
+			if (first_conv==_YES) first_conv=_NO;
+			else
+			{
+		 
+				//receive measured data from sensors
+				for (i=0;i<SENSOR_COUNT;i++)
+				{
+					if (present_ds18b20(i)==1)
+					{
+						send_ds18b20(SKIP_ROM,i);
+						send_ds18b20(GET_DATA,i);
+						val=receive_ds18b20(i);
 
-		//If no errors at sensor[0] and PWM is ON - calculate and set correction
-		if (((error_code & 0x01)==0)&&(pwm_state==PWM_ON))
-		{
-			E=(double) sensor_data[0]-value_data[0];
+						if ((val&0x8000)!=0x00)
+						{
+							sign=1;
+							val=0xffff-val+1;
+						}
+						else sign=0;
 
-			U=U+Kp*E;
+						fract=0;
+						if ((val&0x01)!=0x00) fract=fract+65;
+						if ((val&0x02)!=0x00) fract=fract+125;
+						if ((val&0x04)!=0x00) fract=fract+250;
+						if ((val&0x08)!=0x00) fract=fract+500;
 
-			if (U>255.0) 	U=255.0;
-			if (U<=0.0) 	U=0.0;
+						val=(val>>4)*10+fract/100;
+
+						if (sign==1) val=OFFSET-val;
+						else val=val+OFFSET;
+
+						sensor_data[i]=val;
+					}
+					else error_code|=(1<<i);
+				}
+
+				//if PWM if OFF - clear all variables and off PWM
+				if (pwm_state==PWM_OFF)
+				{
+					off_pwm();
+					set_pwm(0x00);
+					U=0.0;
+					E=0.0;
+					correction=0;
+				}
+				else if (get_pwm()!=0) on_pwm();
+
+				//If no errors at sensor[0] and PWM is ON - calculate and set correction
+				if (((error_code & 0x01)==0)&&(pwm_state==PWM_ON))
+				{
+					E=(double) sensor_data[0]-value_data[0];
+
+					U=U+Kp*E;
+
+					if (U>255.0) 	U=255.0;
+					if (U<=0.0) 	U=0.0;
 		
-			correction=(uint8_t) U;
-			set_pwm(correction); 				
-		}
+					correction=(uint8_t) U;
+					set_pwm(correction); 				
+				}
 
+			}
 		}
 	}
 }
