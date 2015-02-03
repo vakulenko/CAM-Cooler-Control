@@ -6,3 +6,11 @@ C:\Documents and Settings\Admin\Local Settings\Application Data\Temporary Projec
 C:\Documents and Settings\Admin\Local Settings\Application Data\Temporary Projects\TEC_control_v01\bin\Release\TEC_control_v01.pdb
 C:\Documents and Settings\Admin\Local Settings\Application Data\Temporary Projects\TEC_control_v01\obj\x86\Release\TEC_control_v01.exe
 C:\Documents and Settings\Admin\Local Settings\Application Data\Temporary Projects\TEC_control_v01\obj\x86\Release\TEC_control_v01.pdb
+C:\share\dev\TEC_control_v01\TEC_control_v01\bin\Release\TEC_control_v01.exe
+C:\share\dev\TEC_control_v01\TEC_control_v01\bin\Release\TEC_control_v01.pdb
+C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\ResolveAssemblyReference.cache
+C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_v01.Properties.Resources.resources
+C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\GenerateResource.read.1.tlog
+C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\GenerateResource.write.1.tlog
+C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_v01.exe
+C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_v01.pdb

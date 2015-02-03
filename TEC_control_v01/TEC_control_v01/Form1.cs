@@ -240,7 +240,10 @@ namespace TEC_control_01
 
         private byte read_packet()
         {
-            byte crc;
+            byte crc, i;
+
+            for (i = 0; i < buffer_size; i++)
+                rx_buf[i] = 0;
 
             if ((serialport.BytesToRead != responce_packet_size) && (serialport.BytesToRead != info_packet_size)) return 0;
             serialport.Read(rx_buf, 0, serialport.BytesToRead);
