@@ -1359,10 +1359,10 @@ void clear_buf (void)
      5f8:	40 93 93 01 	sts	0x0193, r20
      5fc:	50 93 94 01 	sts	0x0194, r21
 	Kp=Kp_INIT;
-     600:	8d ec       	ldi	r24, 0xCD	; 205
-     602:	9c ec       	ldi	r25, 0xCC	; 204
-     604:	ac e4       	ldi	r26, 0x4C	; 76
-     606:	be e3       	ldi	r27, 0x3E	; 62
+     600:	8a e0       	ldi	r24, 0x0A	; 10
+     602:	97 ed       	ldi	r25, 0xD7	; 215
+     604:	a3 ea       	ldi	r26, 0xA3	; 163
+     606:	bc e3       	ldi	r27, 0x3C	; 60
      608:	80 93 8d 01 	sts	0x018D, r24
      60c:	90 93 8e 01 	sts	0x018E, r25
      610:	a0 93 8f 01 	sts	0x018F, r26
