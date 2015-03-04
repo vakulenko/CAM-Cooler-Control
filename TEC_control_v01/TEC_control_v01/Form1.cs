@@ -350,7 +350,6 @@ namespace TEC_control_01
                         return 0;
                     };
             }
-
             return 1;
         }
 

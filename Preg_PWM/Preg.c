@@ -4,6 +4,8 @@
 #include	<avr/eeprom.h>
 #include 	<stdint.h>
 
+#define STABDALONE_MODE	0
+
 #define	BUFF_SIZE		11
 #define	SENSOR_COUNT	2
 #define VALUE_COUNT		1
@@ -43,7 +45,7 @@
 #define CRC_POLY 0x31
 
 //Proportional regulator
-#define Kp_INIT	0.02
+#define Kp_INIT	0.002
 
 //uart packet buffer
 volatile uint8_t rx_buf [BUFF_SIZE+1];
@@ -289,7 +291,7 @@ void process_packet(void)
 
 				val=(rx_buf[1]<<8)|(rx_buf[2]);
 				if ((val<=1780)&&(val>=780)) value_data[0]=val;
-				eeprom_write_word (&saved_value, value_data[0]);
+				if (STABDALONE_MODE==1) eeprom_write_word (&saved_value, value_data[0]);
 			}
 			
 			break;
@@ -316,7 +318,7 @@ void process_packet(void)
 			if ((rx_buf[1]==PWM_OFF)||(rx_buf[1]==PWM_ON))
 			{
 				pwm_state=rx_buf[1];
-				eeprom_write_word (&saved_pwm_state, pwm_state);
+				if (STABDALONE_MODE==1) eeprom_write_word (&saved_pwm_state, pwm_state);
 			}		
 		}
 		break;
@@ -410,9 +412,17 @@ int main(void)
 	uint16_t val, fract;
 	
 	//read from EEPROM saved value & PWM state
-	value_data[0]= eeprom_read_word (&saved_value);
-	pwm_state = eeprom_read_byte(&saved_pwm_state);
+	if (STABDALONE_MODE==1)
+	{	
+		value_data[0]= eeprom_read_word (&saved_value);
+		pwm_state = eeprom_read_byte(&saved_pwm_state);
+	}
+	else
+	{
+		value_data[0]=1730;
+		pwm_state=PWM_OFF;
 
+	}
 	//init variables
 	for (i=0;i<SENSOR_COUNT;i++)
 	sensor_data[i]=0;
