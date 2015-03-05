@@ -45,7 +45,7 @@
 #define CRC_POLY 0x31
 
 //Proportional regulator
-#define Kp_INIT	0.002
+#define Kp_INIT	0.02
 
 //uart packet buffer
 volatile uint8_t rx_buf [BUFF_SIZE+1];
