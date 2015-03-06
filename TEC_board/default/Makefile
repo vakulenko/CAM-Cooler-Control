@@ -1,11 +1,11 @@
 ###############################################################################
-# Makefile for the project Preg
+# Makefile for the project TEC_board
 ###############################################################################
 
 ## General Flags
-PROJECT = Preg
+PROJECT = TEC_board
 MCU = atmega16
-TARGET = Preg.elf
+TARGET = TEC_board.elf
 CC = avr-gcc
 
 CPP = avr-g++
@@ -25,7 +25,7 @@ ASMFLAGS += -x assembler-with-cpp -Wa,-gdwarf2
 
 ## Linker flags
 LDFLAGS = $(COMMON)
-LDFLAGS +=  -Wl,-Map=Preg.map
+LDFLAGS +=  -Wl,-Map=TEC_board.map
 
 
 ## Intel Hex file production flags
@@ -37,16 +37,16 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 
 ## Objects that must be built in order to link
-OBJECTS = Preg.o 
+OBJECTS = TEC_board.o 
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
 
 ## Build
-all: $(TARGET) Preg.hex Preg.eep Preg.lss size
+all: $(TARGET) TEC_board.hex TEC_board.eep TEC_board.lss size
 
 ## Compile
-Preg.o: ../Preg.c
+TEC_board.o: ../TEC_board.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 ##Link
@@ -69,7 +69,7 @@ size: ${TARGET}
 ## Clean target
 .PHONY: clean
 clean:
-	-rm -rf $(OBJECTS) Preg.elf dep/* Preg.hex Preg.eep Preg.lss Preg.map
+	-rm -rf $(OBJECTS) TEC_board.elf dep/* TEC_board.hex TEC_board.eep TEC_board.lss TEC_board.map
 
 
 ## Other dependencies

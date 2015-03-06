@@ -1,0 +1,1651 @@
+
+TEC_board.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000754  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .bss          00000030  00800060  00800060  000007e8  2**0
+                  ALLOC
+  2 .eeprom       00000003  00810000  00810000  000007e8  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  3 .debug_aranges 00000020  00000000  00000000  000007eb  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_pubnames 0000022b  00000000  00000000  0000080b  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000a4b  00000000  00000000  00000a36  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000302  00000000  00000000  00001481  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   0000094e  00000000  00000000  00001783  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000160  00000000  00000000  000020d4  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    0000029e  00000000  00000000  00002234  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    000003b0  00000000  00000000  000024d2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000258  00000000  00000000  00002882  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+   8:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+   c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  10:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  14:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  18:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  1c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  20:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  24:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  28:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  2c:	0c 94 9b 00 	jmp	0x136	; 0x136 <__vector_11>
+  30:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  34:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  38:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  3c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  40:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  44:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  48:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  4c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  50:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d4 e0       	ldi	r29, 0x04	; 4
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+
+00000060 <__do_clear_bss>:
+  60:	10 e0       	ldi	r17, 0x00	; 0
+  62:	a0 e6       	ldi	r26, 0x60	; 96
+  64:	b0 e0       	ldi	r27, 0x00	; 0
+  66:	01 c0       	rjmp	.+2      	; 0x6a <.do_clear_bss_start>
+
+00000068 <.do_clear_bss_loop>:
+  68:	1d 92       	st	X+, r1
+
+0000006a <.do_clear_bss_start>:
+  6a:	a0 39       	cpi	r26, 0x90	; 144
+  6c:	b1 07       	cpc	r27, r17
+  6e:	e1 f7       	brne	.-8      	; 0x68 <.do_clear_bss_loop>
+  70:	0e 94 6f 02 	call	0x4de	; 0x4de <main>
+  74:	0c 94 a8 03 	jmp	0x750	; 0x750 <_exit>
+
+00000078 <__bad_interrupt>:
+  78:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000007c <uartInit>:
+//------------------------------------------------------------------------------------
+//UART
+
+void uartInit(void)
+{
+	UBRRH = UART_BAUDRATE_H;		// Init UART baudrate
+  7c:	10 bc       	out	0x20, r1	; 32
+	UBRRL = UART_BAUDRATE_L;
+  7e:	83 e3       	ldi	r24, 0x33	; 51
+  80:	89 b9       	out	0x09, r24	; 9
+
+	UCSRB = (1<<RXEN)|(1<<TXEN)|(1 << RXCIE);	// TX, RX enable, RX interrupt enable
+  82:	88 e9       	ldi	r24, 0x98	; 152
+  84:	8a b9       	out	0x0a, r24	; 10
+	UCSRC = (1<<URSEL)|(1<<UCSZ1)|(1<<UCSZ0);
+  86:	86 e8       	ldi	r24, 0x86	; 134
+  88:	80 bd       	out	0x20, r24	; 32
+	return;
+}
+  8a:	08 95       	ret
+
+0000008c <uartTransmitByte>:
+
+//Send byte thought UART
+void uartTransmitByte (uint8_t data)
+{
+	while ( !( UCSRA & (1<<UDRE)) );
+  8c:	5d 9b       	sbis	0x0b, 5	; 11
+  8e:	fe cf       	rjmp	.-4      	; 0x8c <uartTransmitByte>
+	UDR = data;
+  90:	8c b9       	out	0x0c, r24	; 12
+	return;
+}
+  92:	08 95       	ret
+
+00000094 <uartReceiveByte>:
+
+//Receive byte thought UART
+unsigned char uartReceiveByte (void)
+{
+
+	while ( !(UCSRA & (1<<RXC)) )
+  94:	5f 9b       	sbis	0x0b, 7	; 11
+  96:	fe cf       	rjmp	.-4      	; 0x94 <uartReceiveByte>
+	;
+	return UDR;
+  98:	8c b1       	in	r24, 0x0c	; 12
+}
+  9a:	08 95       	ret
+
+0000009c <uartTransmitMessage>:
+
+//Transmit string to UART
+void uartTransmitMessage(char* msg)
+{ unsigned char i;
+  9c:	20 e0       	ldi	r18, 0x00	; 0
+  9e:	04 c0       	rjmp	.+8      	; 0xa8 <uartTransmitMessage+0xc>
+}
+
+//Send byte thought UART
+void uartTransmitByte (uint8_t data)
+{
+	while ( !( UCSRA & (1<<UDRE)) );
+  a0:	5d 9b       	sbis	0x0b, 5	; 11
+  a2:	fe cf       	rjmp	.-4      	; 0xa0 <uartTransmitMessage+0x4>
+	UDR = data;
+  a4:	ec b9       	out	0x0c, r30	; 12
+	i=0;
+
+	while ((i<256)&(msg[i]!=0x00) )
+	{
+		uartTransmitByte(msg[i]);
+		i++;
+  a6:	2f 5f       	subi	r18, 0xFF	; 255
+//Transmit string to UART
+void uartTransmitMessage(char* msg)
+{ unsigned char i;
+	i=0;
+
+	while ((i<256)&(msg[i]!=0x00) )
+  a8:	fc 01       	movw	r30, r24
+  aa:	e2 0f       	add	r30, r18
+  ac:	f1 1d       	adc	r31, r1
+  ae:	e0 81       	ld	r30, Z
+  b0:	ee 23       	and	r30, r30
+  b2:	b1 f7       	brne	.-20     	; 0xa0 <uartTransmitMessage+0x4>
+	{
+		uartTransmitByte(msg[i]);
+		i++;
+	}
+	return;
+}
+  b4:	08 95       	ret
+
+000000b6 <initPWM>:
+//------------------------------------------------------------------------------------
+//PWM
+
+void initPWM (void)
+{
+	TEC_PORT&=~(1<<TEC_PIN);
+  b6:	95 98       	cbi	0x12, 5	; 18
+	TEC_DDR|=(1<<TEC_PIN);
+  b8:	8d 9a       	sbi	0x11, 5	; 17
+
+	TCCR1A|=(1<<WGM10);
+  ba:	8f b5       	in	r24, 0x2f	; 47
+  bc:	81 60       	ori	r24, 0x01	; 1
+  be:	8f bd       	out	0x2f, r24	; 47
+	TCCR1B|=(1<<WGM12)|(1<<CS10);
+  c0:	8e b5       	in	r24, 0x2e	; 46
+  c2:	89 60       	ori	r24, 0x09	; 9
+  c4:	8e bd       	out	0x2e, r24	; 46
+
+	OCR1AL=0x00;
+  c6:	1a bc       	out	0x2a, r1	; 42
+	OCR1BL=0x00;
+  c8:	18 bc       	out	0x28, r1	; 40
+	return;
+}
+  ca:	08 95       	ret
+
+000000cc <offPWM>:
+
+void offPWM()
+{
+	TCCR1A&=~(1<<COM1A1);
+  cc:	8f b5       	in	r24, 0x2f	; 47
+  ce:	8f 77       	andi	r24, 0x7F	; 127
+  d0:	8f bd       	out	0x2f, r24	; 47
+	return;
+}
+  d2:	08 95       	ret
+
+000000d4 <onPWM>:
+
+void onPWM()
+{
+	TCCR1A|=(1<<COM1A1);
+  d4:	8f b5       	in	r24, 0x2f	; 47
+  d6:	80 68       	ori	r24, 0x80	; 128
+  d8:	8f bd       	out	0x2f, r24	; 47
+	return;
+}
+  da:	08 95       	ret
+
+000000dc <setPWM>:
+
+void setPWM (uint8_t data)
+{
+	OCR1AL=data;
+  dc:	8a bd       	out	0x2a, r24	; 42
+	if (data==0) offPWM();
+  de:	88 23       	and	r24, r24
+  e0:	19 f4       	brne	.+6      	; 0xe8 <setPWM+0xc>
+	return;
+}
+
+void offPWM()
+{
+	TCCR1A&=~(1<<COM1A1);
+  e2:	8f b5       	in	r24, 0x2f	; 47
+  e4:	8f 77       	andi	r24, 0x7F	; 127
+  e6:	02 c0       	rjmp	.+4      	; 0xec <setPWM+0x10>
+	return;
+}
+
+void onPWM()
+{
+	TCCR1A|=(1<<COM1A1);
+  e8:	8f b5       	in	r24, 0x2f	; 47
+  ea:	80 68       	ori	r24, 0x80	; 128
+  ec:	8f bd       	out	0x2f, r24	; 47
+  ee:	08 95       	ret
+
+000000f0 <getPWM>:
+	return;
+}
+
+uint8_t getPWM (void)
+{
+	return OCR1AL;
+  f0:	8a b5       	in	r24, 0x2a	; 42
+}
+  f2:	08 95       	ret
+
+000000f4 <clearRXBuf>:
+
+//------------------------------------------------------------------------------------
+//Packets
+void clearRXBuf (void)
+{
+  f4:	e7 e7       	ldi	r30, 0x77	; 119
+  f6:	f0 e0       	ldi	r31, 0x00	; 0
+	uint8_t i;
+	for (i=0;i<BUFF_SIZE;i++)
+	rxBuf[i]=0;
+  f8:	11 92       	st	Z+, r1
+//------------------------------------------------------------------------------------
+//Packets
+void clearRXBuf (void)
+{
+	uint8_t i;
+	for (i=0;i<BUFF_SIZE;i++)
+  fa:	80 e0       	ldi	r24, 0x00	; 0
+  fc:	e2 38       	cpi	r30, 0x82	; 130
+  fe:	f8 07       	cpc	r31, r24
+ 100:	d9 f7       	brne	.-10     	; 0xf8 <clearRXBuf+0x4>
+	rxBuf[i]=0;
+	currentRXPacketLen=0;
+ 102:	10 92 61 00 	sts	0x0061, r1
+	return;
+}
+ 106:	08 95       	ret
+
+00000108 <clearTXBuf>:
+
+void clearTXBuf (void)
+{
+ 108:	e5 e6       	ldi	r30, 0x65	; 101
+ 10a:	f0 e0       	ldi	r31, 0x00	; 0
+	uint8_t i;
+	for (i=0;i<BUFF_SIZE;i++)
+	txBuf[i]=0;
+ 10c:	11 92       	st	Z+, r1
+}
+
+void clearTXBuf (void)
+{
+	uint8_t i;
+	for (i=0;i<BUFF_SIZE;i++)
+ 10e:	80 e0       	ldi	r24, 0x00	; 0
+ 110:	e0 37       	cpi	r30, 0x70	; 112
+ 112:	f8 07       	cpc	r31, r24
+ 114:	d9 f7       	brne	.-10     	; 0x10c <clearTXBuf+0x4>
+	txBuf[i]=0;
+	return;
+}
+ 116:	08 95       	ret
+
+00000118 <clearBuf>:
+
+void clearBuf (void)
+{
+ 118:	80 e0       	ldi	r24, 0x00	; 0
+ 11a:	90 e0       	ldi	r25, 0x00	; 0
+	uint8_t i;
+	for (i=0;i<BUFF_SIZE;i++)
+	rxBuf[i]=txBuf[i]=0;
+ 11c:	fc 01       	movw	r30, r24
+ 11e:	eb 59       	subi	r30, 0x9B	; 155
+ 120:	ff 4f       	sbci	r31, 0xFF	; 255
+ 122:	10 82       	st	Z, r1
+ 124:	fc 01       	movw	r30, r24
+ 126:	e9 58       	subi	r30, 0x89	; 137
+ 128:	ff 4f       	sbci	r31, 0xFF	; 255
+ 12a:	10 82       	st	Z, r1
+ 12c:	01 96       	adiw	r24, 0x01	; 1
+}
+
+void clearBuf (void)
+{
+	uint8_t i;
+	for (i=0;i<BUFF_SIZE;i++)
+ 12e:	8b 30       	cpi	r24, 0x0B	; 11
+ 130:	91 05       	cpc	r25, r1
+ 132:	a1 f7       	brne	.-24     	; 0x11c <clearBuf+0x4>
+	rxBuf[i]=txBuf[i]=0;
+	return;
+}
+ 134:	08 95       	ret
+
+00000136 <__vector_11>:
+
+//receive packet to RX buffer
+ISR(USART_RXC_vect)
+{
+ 136:	1f 92       	push	r1
+ 138:	0f 92       	push	r0
+ 13a:	0f b6       	in	r0, 0x3f	; 63
+ 13c:	0f 92       	push	r0
+ 13e:	11 24       	eor	r1, r1
+ 140:	2f 93       	push	r18
+ 142:	3f 93       	push	r19
+ 144:	4f 93       	push	r20
+ 146:	6f 93       	push	r22
+ 148:	7f 93       	push	r23
+ 14a:	8f 93       	push	r24
+ 14c:	9f 93       	push	r25
+ 14e:	ef 93       	push	r30
+ 150:	ff 93       	push	r31
+	uint16_t i=0;
+
+	if (packetReceived!=0)
+ 152:	80 91 60 00 	lds	r24, 0x0060
+ 156:	88 23       	and	r24, r24
+ 158:	11 f0       	breq	.+4      	; 0x15e <__vector_11+0x28>
+	{
+		i=UDR;
+ 15a:	8c b1       	in	r24, 0x0c	; 12
+ 15c:	25 c0       	rjmp	.+74     	; 0x1a8 <__vector_11+0x72>
+		return;
+	}
+
+	rxBuf[0]=UDR;
+ 15e:	8c b1       	in	r24, 0x0c	; 12
+ 160:	80 93 77 00 	sts	0x0077, r24
+	currentRXPacketLen=1;
+ 164:	81 e0       	ldi	r24, 0x01	; 1
+ 166:	80 93 61 00 	sts	0x0061, r24
+ 16a:	20 e0       	ldi	r18, 0x00	; 0
+ 16c:	30 e0       	ldi	r19, 0x00	; 0
+ 16e:	41 e0       	ldi	r20, 0x01	; 1
+    milliseconds can be achieved.
+ */
+void
+_delay_loop_2(uint16_t __count)
+{
+	__asm__ volatile (
+ 170:	61 e0       	ldi	r22, 0x01	; 1
+ 172:	70 e0       	ldi	r23, 0x00	; 0
+ 174:	09 c0       	rjmp	.+18     	; 0x188 <__vector_11+0x52>
+
+	while (1)
+	{
+		while ( !(UCSRA & (1<<RXC)) )
+		{
+			if (i==10000)
+ 176:	87 e2       	ldi	r24, 0x27	; 39
+ 178:	20 31       	cpi	r18, 0x10	; 16
+ 17a:	38 07       	cpc	r19, r24
+ 17c:	81 f0       	breq	.+32     	; 0x19e <__vector_11+0x68>
+			{
+				packetReceived=1;
+				return;
+			}
+			i++;
+ 17e:	2f 5f       	subi	r18, 0xFF	; 255
+ 180:	3f 4f       	sbci	r19, 0xFF	; 255
+ 182:	cb 01       	movw	r24, r22
+ 184:	01 97       	sbiw	r24, 0x01	; 1
+ 186:	f1 f7       	brne	.-4      	; 0x184 <__vector_11+0x4e>
+	rxBuf[0]=UDR;
+	currentRXPacketLen=1;
+
+	while (1)
+	{
+		while ( !(UCSRA & (1<<RXC)) )
+ 188:	5f 9b       	sbis	0x0b, 7	; 11
+ 18a:	f5 cf       	rjmp	.-22     	; 0x176 <__vector_11+0x40>
+				return;
+			}
+			i++;
+			_delay_loop_2(1);
+		}
+		rxBuf[currentRXPacketLen]=UDR;
+ 18c:	8c b1       	in	r24, 0x0c	; 12
+ 18e:	e4 2f       	mov	r30, r20
+ 190:	f0 e0       	ldi	r31, 0x00	; 0
+ 192:	e9 58       	subi	r30, 0x89	; 137
+ 194:	ff 4f       	sbci	r31, 0xFF	; 255
+ 196:	80 83       	st	Z, r24
+		currentRXPacketLen++;
+ 198:	4f 5f       	subi	r20, 0xFF	; 255
+
+		if (currentRXPacketLen>=BUFF_SIZE)
+ 19a:	4b 30       	cpi	r20, 0x0B	; 11
+ 19c:	a8 f3       	brcs	.-22     	; 0x188 <__vector_11+0x52>
+ 19e:	40 93 61 00 	sts	0x0061, r20
+		{
+			packetReceived=1;
+ 1a2:	81 e0       	ldi	r24, 0x01	; 1
+ 1a4:	80 93 60 00 	sts	0x0060, r24
+			return;
+		}
+	}
+}
+ 1a8:	ff 91       	pop	r31
+ 1aa:	ef 91       	pop	r30
+ 1ac:	9f 91       	pop	r25
+ 1ae:	8f 91       	pop	r24
+ 1b0:	7f 91       	pop	r23
+ 1b2:	6f 91       	pop	r22
+ 1b4:	4f 91       	pop	r20
+ 1b6:	3f 91       	pop	r19
+ 1b8:	2f 91       	pop	r18
+ 1ba:	0f 90       	pop	r0
+ 1bc:	0f be       	out	0x3f, r0	; 63
+ 1be:	0f 90       	pop	r0
+ 1c0:	1f 90       	pop	r1
+ 1c2:	18 95       	reti
+
+000001c4 <uartSendPacket>:
+
+//send packet to host
+void uartSendPacket(uint8_t *data, uint8_t length)
+{
+ 1c4:	e5 e6       	ldi	r30, 0x65	; 101
+ 1c6:	f0 e0       	ldi	r31, 0x00	; 0
+	uint8_t i;
+	for (i=0;i<length;i++)
+ 1c8:	70 e0       	ldi	r23, 0x00	; 0
+ 1ca:	6e 0f       	add	r22, r30
+ 1cc:	7f 1f       	adc	r23, r31
+ 1ce:	05 c0       	rjmp	.+10     	; 0x1da <uartSendPacket+0x16>
+	uartTransmitByte(txBuf[i]);
+ 1d0:	80 81       	ld	r24, Z
+}
+
+//Send byte thought UART
+void uartTransmitByte (uint8_t data)
+{
+	while ( !( UCSRA & (1<<UDRE)) );
+ 1d2:	5d 9b       	sbis	0x0b, 5	; 11
+ 1d4:	fe cf       	rjmp	.-4      	; 0x1d2 <uartSendPacket+0xe>
+	UDR = data;
+ 1d6:	8c b9       	out	0x0c, r24	; 12
+ 1d8:	31 96       	adiw	r30, 0x01	; 1
+
+//send packet to host
+void uartSendPacket(uint8_t *data, uint8_t length)
+{
+	uint8_t i;
+	for (i=0;i<length;i++)
+ 1da:	e6 17       	cp	r30, r22
+ 1dc:	f7 07       	cpc	r31, r23
+ 1de:	c1 f7       	brne	.-16     	; 0x1d0 <uartSendPacket+0xc>
+	uartTransmitByte(txBuf[i]);
+	return;
+}
+ 1e0:	08 95       	ret
+
+000001e2 <crc8Block>:
+
+//crc calculating function
+uint8_t crc8Block(uint8_t *pcBlock, uint8_t len)
+{
+ 1e2:	fc 01       	movw	r30, r24
+ 1e4:	9f ef       	ldi	r25, 0xFF	; 255
+	while (len--)
+	{
+		crc ^= *pcBlock++;
+		
+		for (i = 0; i < 8; i++)
+		crc = crc & 0x80 ? (crc << 1) ^ CRC_POLY : crc << 1;
+ 1e6:	21 e3       	ldi	r18, 0x31	; 49
+ 1e8:	0e c0       	rjmp	.+28     	; 0x206 <crc8Block+0x24>
+	uint8_t crc = 0xFF;
+	uint8_t i;
+	
+	while (len--)
+	{
+		crc ^= *pcBlock++;
+ 1ea:	80 81       	ld	r24, Z
+ 1ec:	98 27       	eor	r25, r24
+ 1ee:	80 e0       	ldi	r24, 0x00	; 0
+		
+		for (i = 0; i < 8; i++)
+		crc = crc & 0x80 ? (crc << 1) ^ CRC_POLY : crc << 1;
+ 1f0:	97 ff       	sbrs	r25, 7
+ 1f2:	03 c0       	rjmp	.+6      	; 0x1fa <crc8Block+0x18>
+ 1f4:	99 0f       	add	r25, r25
+ 1f6:	92 27       	eor	r25, r18
+ 1f8:	01 c0       	rjmp	.+2      	; 0x1fc <crc8Block+0x1a>
+ 1fa:	99 0f       	add	r25, r25
+	
+	while (len--)
+	{
+		crc ^= *pcBlock++;
+		
+		for (i = 0; i < 8; i++)
+ 1fc:	8f 5f       	subi	r24, 0xFF	; 255
+ 1fe:	88 30       	cpi	r24, 0x08	; 8
+ 200:	b9 f7       	brne	.-18     	; 0x1f0 <crc8Block+0xe>
+	uint8_t crc = 0xFF;
+	uint8_t i;
+	
+	while (len--)
+	{
+		crc ^= *pcBlock++;
+ 202:	31 96       	adiw	r30, 0x01	; 1
+ 204:	61 50       	subi	r22, 0x01	; 1
+uint8_t crc8Block(uint8_t *pcBlock, uint8_t len)
+{
+	uint8_t crc = 0xFF;
+	uint8_t i;
+	
+	while (len--)
+ 206:	66 23       	and	r22, r22
+ 208:	81 f7       	brne	.-32     	; 0x1ea <crc8Block+0x8>
+		
+		for (i = 0; i < 8; i++)
+		crc = crc & 0x80 ? (crc << 1) ^ CRC_POLY : crc << 1;
+	}	
+	return crc;
+}
+ 20a:	89 2f       	mov	r24, r25
+ 20c:	08 95       	ret
+
+0000020e <prepareSystemStatus>:
+
+//prepare TX buffer
+void prepareSystemStatus (void)
+{
+	txBuf[0]='d';
+ 20e:	84 e6       	ldi	r24, 0x64	; 100
+ 210:	80 93 65 00 	sts	0x0065, r24
+	txBuf[1]= sensorData[0]>>8;
+ 214:	90 91 73 00 	lds	r25, 0x0073
+ 218:	80 91 74 00 	lds	r24, 0x0074
+ 21c:	80 93 66 00 	sts	0x0066, r24
+	txBuf[2]= sensorData[0]&0x00ff;
+ 220:	90 93 67 00 	sts	0x0067, r25
+	txBuf[3]= sensorData[1]>>8;
+ 224:	90 91 75 00 	lds	r25, 0x0075
+ 228:	80 91 76 00 	lds	r24, 0x0076
+ 22c:	80 93 68 00 	sts	0x0068, r24
+	txBuf[4]= sensorData[1]&0x00ff;
+ 230:	90 93 69 00 	sts	0x0069, r25
+	txBuf[5]= setData[0]>>8;
+ 234:	90 91 71 00 	lds	r25, 0x0071
+ 238:	80 91 72 00 	lds	r24, 0x0072
+ 23c:	80 93 6a 00 	sts	0x006A, r24
+	txBuf[6]= setData[0]&0x00ff;
+ 240:	90 93 6b 00 	sts	0x006B, r25
+	#if PWM_MODE == 1
+		txBuf[7]= getPWM();
+	#else
+		txBuf[7]=coolerPower;
+ 244:	80 91 63 00 	lds	r24, 0x0063
+ 248:	80 93 6c 00 	sts	0x006C, r24
+	#endif
+	txBuf[8]= errorCode;
+ 24c:	80 91 62 00 	lds	r24, 0x0062
+ 250:	80 93 6d 00 	sts	0x006D, r24
+	txBuf[9]= coolerState;
+ 254:	80 91 83 00 	lds	r24, 0x0083
+ 258:	80 93 6e 00 	sts	0x006E, r24
+	txBuf[10]=crc8Block(txBuf,10);
+ 25c:	85 e6       	ldi	r24, 0x65	; 101
+ 25e:	90 e0       	ldi	r25, 0x00	; 0
+ 260:	6a e0       	ldi	r22, 0x0A	; 10
+ 262:	0e 94 f1 00 	call	0x1e2	; 0x1e2 <crc8Block>
+ 266:	80 93 6f 00 	sts	0x006F, r24
+}
+ 26a:	08 95       	ret
+
+0000026c <processPacket>:
+
+//process received packet
+void processPacket(void)
+{
+	cli();
+ 26c:	f8 94       	cli
+	//check CRC
+	if (crc8Block(rxBuf,currentRXPacketLen-1)!=rxBuf[currentRXPacketLen-1])
+ 26e:	60 91 61 00 	lds	r22, 0x0061
+ 272:	61 50       	subi	r22, 0x01	; 1
+ 274:	87 e7       	ldi	r24, 0x77	; 119
+ 276:	90 e0       	ldi	r25, 0x00	; 0
+ 278:	0e 94 f1 00 	call	0x1e2	; 0x1e2 <crc8Block>
+ 27c:	20 91 61 00 	lds	r18, 0x0061
+ 280:	e2 2f       	mov	r30, r18
+ 282:	f0 e0       	ldi	r31, 0x00	; 0
+ 284:	ea 58       	subi	r30, 0x8A	; 138
+ 286:	ff 4f       	sbci	r31, 0xFF	; 255
+ 288:	90 81       	ld	r25, Z
+ 28a:	89 17       	cp	r24, r25
+ 28c:	69 f0       	breq	.+26     	; 0x2a8 <processPacket+0x3c>
+	{
+		packetReceived=0;
+ 28e:	10 92 60 00 	sts	0x0060, r1
+ 292:	e7 e7       	ldi	r30, 0x77	; 119
+ 294:	f0 e0       	ldi	r31, 0x00	; 0
+//Packets
+void clearRXBuf (void)
+{
+	uint8_t i;
+	for (i=0;i<BUFF_SIZE;i++)
+	rxBuf[i]=0;
+ 296:	11 92       	st	Z+, r1
+//------------------------------------------------------------------------------------
+//Packets
+void clearRXBuf (void)
+{
+	uint8_t i;
+	for (i=0;i<BUFF_SIZE;i++)
+ 298:	40 e0       	ldi	r20, 0x00	; 0
+ 29a:	e2 38       	cpi	r30, 0x82	; 130
+ 29c:	f4 07       	cpc	r31, r20
+ 29e:	d9 f7       	brne	.-10     	; 0x296 <processPacket+0x2a>
+	rxBuf[i]=0;
+	currentRXPacketLen=0;
+ 2a0:	10 92 61 00 	sts	0x0061, r1
+	//check CRC
+	if (crc8Block(rxBuf,currentRXPacketLen-1)!=rxBuf[currentRXPacketLen-1])
+	{
+		packetReceived=0;
+		clearRXBuf();
+		sei();
+ 2a4:	78 94       	sei
+ 2a6:	08 95       	ret
+		return;
+	}
+	//differentiate and process packet
+	switch (rxBuf[0]) {
+ 2a8:	80 91 77 00 	lds	r24, 0x0077
+ 2ac:	89 36       	cpi	r24, 0x69	; 105
+ 2ae:	99 f1       	breq	.+102    	; 0x316 <processPacket+0xaa>
+ 2b0:	8a 36       	cpi	r24, 0x6A	; 106
+ 2b2:	20 f4       	brcc	.+8      	; 0x2bc <processPacket+0x50>
+ 2b4:	87 36       	cpi	r24, 0x67	; 103
+ 2b6:	09 f0       	breq	.+2      	; 0x2ba <processPacket+0x4e>
+ 2b8:	57 c0       	rjmp	.+174    	; 0x368 <processPacket+0xfc>
+ 2ba:	07 c0       	rjmp	.+14     	; 0x2ca <processPacket+0x5e>
+ 2bc:	80 37       	cpi	r24, 0x70	; 112
+ 2be:	09 f4       	brne	.+2      	; 0x2c2 <processPacket+0x56>
+ 2c0:	4b c0       	rjmp	.+150    	; 0x358 <processPacket+0xec>
+ 2c2:	83 37       	cpi	r24, 0x73	; 115
+ 2c4:	09 f0       	breq	.+2      	; 0x2c8 <processPacket+0x5c>
+ 2c6:	50 c0       	rjmp	.+160    	; 0x368 <processPacket+0xfc>
+ 2c8:	11 c0       	rjmp	.+34     	; 0x2ec <processPacket+0x80>
+		//if get command
+		case 'g' : 	{
+			if (currentRXPacketLen==2)
+ 2ca:	22 30       	cpi	r18, 0x02	; 2
+ 2cc:	09 f0       	breq	.+2      	; 0x2d0 <processPacket+0x64>
+ 2ce:	4c c0       	rjmp	.+152    	; 0x368 <processPacket+0xfc>
+			{
+				prepareSystemStatus();
+ 2d0:	0e 94 07 01 	call	0x20e	; 0x20e <prepareSystemStatus>
+ 2d4:	e5 e6       	ldi	r30, 0x65	; 101
+ 2d6:	f0 e0       	ldi	r31, 0x00	; 0
+//send packet to host
+void uartSendPacket(uint8_t *data, uint8_t length)
+{
+	uint8_t i;
+	for (i=0;i<length;i++)
+	uartTransmitByte(txBuf[i]);
+ 2d8:	80 81       	ld	r24, Z
+}
+
+//Send byte thought UART
+void uartTransmitByte (uint8_t data)
+{
+	while ( !( UCSRA & (1<<UDRE)) );
+ 2da:	5d 9b       	sbis	0x0b, 5	; 11
+ 2dc:	fe cf       	rjmp	.-4      	; 0x2da <processPacket+0x6e>
+	UDR = data;
+ 2de:	8c b9       	out	0x0c, r24	; 12
+ 2e0:	31 96       	adiw	r30, 0x01	; 1
+
+//send packet to host
+void uartSendPacket(uint8_t *data, uint8_t length)
+{
+	uint8_t i;
+	for (i=0;i<length;i++)
+ 2e2:	80 e0       	ldi	r24, 0x00	; 0
+ 2e4:	e0 37       	cpi	r30, 0x70	; 112
+ 2e6:	f8 07       	cpc	r31, r24
+ 2e8:	b9 f7       	brne	.-18     	; 0x2d8 <processPacket+0x6c>
+ 2ea:	3e c0       	rjmp	.+124    	; 0x368 <processPacket+0xfc>
+			}			
+			break;
+		}
+		//if set command
+		case 's' : 	{
+			if (currentRXPacketLen==4)
+ 2ec:	24 30       	cpi	r18, 0x04	; 4
+ 2ee:	e1 f5       	brne	.+120    	; 0x368 <processPacket+0xfc>
+			{
+				uint16_t val;
+
+				val=(rxBuf[1]<<8)|(rxBuf[2]);
+ 2f0:	90 91 78 00 	lds	r25, 0x0078
+ 2f4:	80 e0       	ldi	r24, 0x00	; 0
+ 2f6:	20 91 79 00 	lds	r18, 0x0079
+ 2fa:	30 e0       	ldi	r19, 0x00	; 0
+ 2fc:	28 2b       	or	r18, r24
+ 2fe:	39 2b       	or	r19, r25
+				if ((val<=1780)&&(val>=780)) setData[0]=val;
+ 300:	c9 01       	movw	r24, r18
+ 302:	8c 50       	subi	r24, 0x0C	; 12
+ 304:	93 40       	sbci	r25, 0x03	; 3
+ 306:	89 5e       	subi	r24, 0xE9	; 233
+ 308:	93 40       	sbci	r25, 0x03	; 3
+ 30a:	70 f5       	brcc	.+92     	; 0x368 <processPacket+0xfc>
+ 30c:	30 93 72 00 	sts	0x0072, r19
+ 310:	20 93 71 00 	sts	0x0071, r18
+ 314:	29 c0       	rjmp	.+82     	; 0x368 <processPacket+0xfc>
+			
+			break;
+		}
+		//if info command
+		case 'i' :	{
+			if (currentRXPacketLen==2)
+ 316:	22 30       	cpi	r18, 0x02	; 2
+ 318:	39 f5       	brne	.+78     	; 0x368 <processPacket+0xfc>
+			{
+				txBuf[0]='v';
+ 31a:	86 e7       	ldi	r24, 0x76	; 118
+ 31c:	80 93 65 00 	sts	0x0065, r24
+				txBuf[1]=HW_REVISION;
+ 320:	81 e0       	ldi	r24, 0x01	; 1
+ 322:	80 93 66 00 	sts	0x0066, r24
+				txBuf[2]=SW_REVISION;
+ 326:	80 93 67 00 	sts	0x0067, r24
+				txBuf[3]=SENSOR_COUNT;
+ 32a:	20 93 68 00 	sts	0x0068, r18
+				txBuf[4]=VALUE_COUNT;
+ 32e:	80 93 69 00 	sts	0x0069, r24
+				txBuf[5]=crc8Block(txBuf,5);
+ 332:	85 e6       	ldi	r24, 0x65	; 101
+ 334:	90 e0       	ldi	r25, 0x00	; 0
+ 336:	65 e0       	ldi	r22, 0x05	; 5
+ 338:	0e 94 f1 00 	call	0x1e2	; 0x1e2 <crc8Block>
+ 33c:	80 93 6a 00 	sts	0x006A, r24
+ 340:	e5 e6       	ldi	r30, 0x65	; 101
+ 342:	f0 e0       	ldi	r31, 0x00	; 0
+//send packet to host
+void uartSendPacket(uint8_t *data, uint8_t length)
+{
+	uint8_t i;
+	for (i=0;i<length;i++)
+	uartTransmitByte(txBuf[i]);
+ 344:	80 81       	ld	r24, Z
+}
+
+//Send byte thought UART
+void uartTransmitByte (uint8_t data)
+{
+	while ( !( UCSRA & (1<<UDRE)) );
+ 346:	5d 9b       	sbis	0x0b, 5	; 11
+ 348:	fe cf       	rjmp	.-4      	; 0x346 <processPacket+0xda>
+	UDR = data;
+ 34a:	8c b9       	out	0x0c, r24	; 12
+ 34c:	31 96       	adiw	r30, 0x01	; 1
+
+//send packet to host
+void uartSendPacket(uint8_t *data, uint8_t length)
+{
+	uint8_t i;
+	for (i=0;i<length;i++)
+ 34e:	80 e0       	ldi	r24, 0x00	; 0
+ 350:	eb 36       	cpi	r30, 0x6B	; 107
+ 352:	f8 07       	cpc	r31, r24
+ 354:	b9 f7       	brne	.-18     	; 0x344 <processPacket+0xd8>
+ 356:	08 c0       	rjmp	.+16     	; 0x368 <processPacket+0xfc>
+
+			break;
+		}
+		//if powern ON/OFF PWM
+		case 'p' : 	{
+		if (currentRXPacketLen==3)
+ 358:	23 30       	cpi	r18, 0x03	; 3
+ 35a:	31 f4       	brne	.+12     	; 0x368 <processPacket+0xfc>
+		{
+			if ((rxBuf[1]==COOLER_OFF)||(rxBuf[1]==COOLER_ON))
+ 35c:	80 91 78 00 	lds	r24, 0x0078
+ 360:	82 30       	cpi	r24, 0x02	; 2
+ 362:	10 f4       	brcc	.+4      	; 0x368 <processPacket+0xfc>
+			{
+				coolerState=rxBuf[1];
+ 364:	80 93 83 00 	sts	0x0083, r24
+		default:
+		{
+			;
+		}
+	}
+	packetReceived=0;
+ 368:	10 92 60 00 	sts	0x0060, r1
+ 36c:	e7 e7       	ldi	r30, 0x77	; 119
+ 36e:	f0 e0       	ldi	r31, 0x00	; 0
+//Packets
+void clearRXBuf (void)
+{
+	uint8_t i;
+	for (i=0;i<BUFF_SIZE;i++)
+	rxBuf[i]=0;
+ 370:	11 92       	st	Z+, r1
+//------------------------------------------------------------------------------------
+//Packets
+void clearRXBuf (void)
+{
+	uint8_t i;
+	for (i=0;i<BUFF_SIZE;i++)
+ 372:	40 e0       	ldi	r20, 0x00	; 0
+ 374:	e2 38       	cpi	r30, 0x82	; 130
+ 376:	f4 07       	cpc	r31, r20
+ 378:	d9 f7       	brne	.-10     	; 0x370 <processPacket+0x104>
+	rxBuf[i]=0;
+	currentRXPacketLen=0;
+ 37a:	10 92 61 00 	sts	0x0061, r1
+			;
+		}
+	}
+	packetReceived=0;
+	clearRXBuf();
+	sei();
+ 37e:	78 94       	sei
+ 380:	08 95       	ret
+
+00000382 <presentDS18b20>:
+//DS18B20
+
+uint8_t presentDS18b20(uint8_t sensor_num)
+{	uint8_t res, sensor_pin;
+
+	if (sensor_num==0)	sensor_pin=SENSOR0_PIN;
+ 382:	88 23       	and	r24, r24
+ 384:	11 f0       	breq	.+4      	; 0x38a <presentDS18b20+0x8>
+ 386:	43 e0       	ldi	r20, 0x03	; 3
+ 388:	01 c0       	rjmp	.+2      	; 0x38c <presentDS18b20+0xa>
+ 38a:	42 e0       	ldi	r20, 0x02	; 2
+	else sensor_pin=SENSOR1_PIN;
+	
+	SENSOR_DDR|=(1<<sensor_pin);
+ 38c:	84 b3       	in	r24, 0x14	; 20
+ 38e:	21 e0       	ldi	r18, 0x01	; 1
+ 390:	30 e0       	ldi	r19, 0x00	; 0
+ 392:	92 2f       	mov	r25, r18
+ 394:	04 2e       	mov	r0, r20
+ 396:	01 c0       	rjmp	.+2      	; 0x39a <presentDS18b20+0x18>
+ 398:	99 0f       	add	r25, r25
+ 39a:	0a 94       	dec	r0
+ 39c:	ea f7       	brpl	.-6      	; 0x398 <presentDS18b20+0x16>
+ 39e:	89 2b       	or	r24, r25
+ 3a0:	84 bb       	out	0x14, r24	; 20
+ 3a2:	e0 ec       	ldi	r30, 0xC0	; 192
+ 3a4:	f3 e0       	ldi	r31, 0x03	; 3
+ 3a6:	31 97       	sbiw	r30, 0x01	; 1
+ 3a8:	f1 f7       	brne	.-4      	; 0x3a6 <presentDS18b20+0x24>
+	_delay_us (480);
+
+	SENSOR_DDR&=~(1<<sensor_pin);
+ 3aa:	84 b3       	in	r24, 0x14	; 20
+ 3ac:	90 95       	com	r25
+ 3ae:	98 23       	and	r25, r24
+ 3b0:	94 bb       	out	0x14, r25	; 20
+    can be achieved.
+*/
+void
+_delay_loop_1(uint8_t __count)
+{
+	__asm__ volatile (
+ 3b2:	8a eb       	ldi	r24, 0xBA	; 186
+ 3b4:	8a 95       	dec	r24
+ 3b6:	f1 f7       	brne	.-4      	; 0x3b4 <presentDS18b20+0x32>
+	_delay_us(70);
+	
+	if ((SENSOR_PIN&(1<<sensor_pin)) == 0x00) res=1;  
+ 3b8:	83 b3       	in	r24, 0x13	; 19
+    milliseconds can be achieved.
+ */
+void
+_delay_loop_2(uint16_t __count)
+{
+	__asm__ volatile (
+ 3ba:	e4 e3       	ldi	r30, 0x34	; 52
+ 3bc:	f3 e0       	ldi	r31, 0x03	; 3
+ 3be:	31 97       	sbiw	r30, 0x01	; 1
+ 3c0:	f1 f7       	brne	.-4      	; 0x3be <presentDS18b20+0x3c>
+ 3c2:	90 e0       	ldi	r25, 0x00	; 0
+ 3c4:	02 c0       	rjmp	.+4      	; 0x3ca <presentDS18b20+0x48>
+ 3c6:	95 95       	asr	r25
+ 3c8:	87 95       	ror	r24
+ 3ca:	4a 95       	dec	r20
+ 3cc:	e2 f7       	brpl	.-8      	; 0x3c6 <presentDS18b20+0x44>
+ 3ce:	82 27       	eor	r24, r18
+ 3d0:	93 27       	eor	r25, r19
+	else res=0;  
+	
+	_delay_us(410);
+	return res;
+}
+ 3d2:	81 70       	andi	r24, 0x01	; 1
+ 3d4:	08 95       	ret
+
+000003d6 <sendDS18b20>:
+
+void sendDS18b20(uint8_t command, uint8_t sensor_num)
+{	uint8_t i, data, sensor_pin;
+ 3d6:	48 2f       	mov	r20, r24
+
+	if (sensor_num==0)	sensor_pin=SENSOR0_PIN;
+ 3d8:	66 23       	and	r22, r22
+ 3da:	11 f0       	breq	.+4      	; 0x3e0 <sendDS18b20+0xa>
+ 3dc:	23 e0       	ldi	r18, 0x03	; 3
+ 3de:	01 c0       	rjmp	.+2      	; 0x3e2 <sendDS18b20+0xc>
+ 3e0:	22 e0       	ldi	r18, 0x02	; 2
+	data=command;
+
+	for(i=0;i<8;i++)
+	{
+		if ((data&0x01)==0x01) {    //Send 1 on SDA
+			SENSOR_DDR|=(1<<sensor_pin);
+ 3e2:	81 e0       	ldi	r24, 0x01	; 1
+ 3e4:	90 e0       	ldi	r25, 0x00	; 0
+ 3e6:	38 2f       	mov	r19, r24
+ 3e8:	01 c0       	rjmp	.+2      	; 0x3ec <sendDS18b20+0x16>
+ 3ea:	33 0f       	add	r19, r19
+ 3ec:	2a 95       	dec	r18
+ 3ee:	ea f7       	brpl	.-6      	; 0x3ea <sendDS18b20+0x14>
+			_delay_us(6);
+			SENSOR_DDR&=~(1<<sensor_pin);
+ 3f0:	53 2f       	mov	r21, r19
+ 3f2:	50 95       	com	r21
+ 3f4:	24 2f       	mov	r18, r20
+ 3f6:	90 e0       	ldi	r25, 0x00	; 0
+    can be achieved.
+*/
+void
+_delay_loop_1(uint8_t __count)
+{
+	__asm__ volatile (
+ 3f8:	e0 ea       	ldi	r30, 0xA0	; 160
+	else sensor_pin=SENSOR1_PIN;
+	data=command;
+
+	for(i=0;i<8;i++)
+	{
+		if ((data&0x01)==0x01) {    //Send 1 on SDA
+ 3fa:	7a e1       	ldi	r23, 0x1A	; 26
+ 3fc:	60 e1       	ldi	r22, 0x10	; 16
+ 3fe:	4a ea       	ldi	r20, 0xAA	; 170
+ 400:	20 ff       	sbrs	r18, 0
+ 402:	0b c0       	rjmp	.+22     	; 0x41a <sendDS18b20+0x44>
+			SENSOR_DDR|=(1<<sensor_pin);
+ 404:	84 b3       	in	r24, 0x14	; 20
+ 406:	83 2b       	or	r24, r19
+ 408:	84 bb       	out	0x14, r24	; 20
+ 40a:	86 2f       	mov	r24, r22
+ 40c:	8a 95       	dec	r24
+ 40e:	f1 f7       	brne	.-4      	; 0x40c <sendDS18b20+0x36>
+			_delay_us(6);
+			SENSOR_DDR&=~(1<<sensor_pin);
+ 410:	84 b3       	in	r24, 0x14	; 20
+ 412:	85 23       	and	r24, r21
+ 414:	84 bb       	out	0x14, r24	; 20
+ 416:	84 2f       	mov	r24, r20
+ 418:	0a c0       	rjmp	.+20     	; 0x42e <sendDS18b20+0x58>
+			_delay_us(64);
+		}
+		else {                   	//Send 0 on SDA
+			SENSOR_DDR|=(1<<sensor_pin);
+ 41a:	84 b3       	in	r24, 0x14	; 20
+ 41c:	83 2b       	or	r24, r19
+ 41e:	84 bb       	out	0x14, r24	; 20
+ 420:	8e 2f       	mov	r24, r30
+ 422:	8a 95       	dec	r24
+ 424:	f1 f7       	brne	.-4      	; 0x422 <sendDS18b20+0x4c>
+			_delay_us(60);
+			SENSOR_DDR&=~(1<<sensor_pin);
+ 426:	84 b3       	in	r24, 0x14	; 20
+ 428:	85 23       	and	r24, r21
+ 42a:	84 bb       	out	0x14, r24	; 20
+ 42c:	87 2f       	mov	r24, r23
+ 42e:	8a 95       	dec	r24
+ 430:	f1 f7       	brne	.-4      	; 0x42e <sendDS18b20+0x58>
+
+	if (sensor_num==0)	sensor_pin=SENSOR0_PIN;
+	else sensor_pin=SENSOR1_PIN;
+	data=command;
+
+	for(i=0;i<8;i++)
+ 432:	9f 5f       	subi	r25, 0xFF	; 255
+ 434:	98 30       	cpi	r25, 0x08	; 8
+ 436:	11 f0       	breq	.+4      	; 0x43c <sendDS18b20+0x66>
+			SENSOR_DDR|=(1<<sensor_pin);
+			_delay_us(60);
+			SENSOR_DDR&=~(1<<sensor_pin);
+			_delay_us(10);
+		}
+		data=data>>1;
+ 438:	26 95       	lsr	r18
+ 43a:	e2 cf       	rjmp	.-60     	; 0x400 <sendDS18b20+0x2a>
+ 43c:	08 95       	ret
+
+0000043e <receiveDS18b20>:
+	}
+	return;
+}
+
+uint16_t receiveDS18b20(uint8_t sensor_num)
+{	uint8_t i, sensor_pin;
+ 43e:	ff 92       	push	r15
+ 440:	0f 93       	push	r16
+ 442:	1f 93       	push	r17
+	uint16_t res=0;
+
+	if (sensor_num==0)	sensor_pin=SENSOR0_PIN;
+ 444:	88 23       	and	r24, r24
+ 446:	11 f0       	breq	.+4      	; 0x44c <receiveDS18b20+0xe>
+ 448:	83 e0       	ldi	r24, 0x03	; 3
+ 44a:	01 c0       	rjmp	.+2      	; 0x44e <receiveDS18b20+0x10>
+ 44c:	82 e0       	ldi	r24, 0x02	; 2
+	else sensor_pin=SENSOR1_PIN;
+
+	for(i=0;i<16;i++)
+	{
+		SENSOR_DDR|=(1<<sensor_pin);		
+ 44e:	61 e0       	ldi	r22, 0x01	; 1
+ 450:	70 e0       	ldi	r23, 0x00	; 0
+ 452:	02 c0       	rjmp	.+4      	; 0x458 <receiveDS18b20+0x1a>
+ 454:	66 0f       	add	r22, r22
+ 456:	77 1f       	adc	r23, r23
+ 458:	8a 95       	dec	r24
+ 45a:	e2 f7       	brpl	.-8      	; 0x454 <receiveDS18b20+0x16>
+ 45c:	a6 2f       	mov	r26, r22
+		_delay_us(6);
+		SENSOR_DDR&=~(1<<sensor_pin);		
+ 45e:	b6 2f       	mov	r27, r22
+ 460:	b0 95       	com	r27
+ 462:	20 e0       	ldi	r18, 0x00	; 0
+ 464:	30 e0       	ldi	r19, 0x00	; 0
+ 466:	40 e0       	ldi	r20, 0x00	; 0
+ 468:	50 e0       	ldi	r21, 0x00	; 0
+ 46a:	80 e1       	ldi	r24, 0x10	; 16
+ 46c:	f8 2e       	mov	r15, r24
+		_delay_us(9);
+
+		if ((SENSOR_PIN & (1<<sensor_pin))==0x00) res&=~_BV(i);	//If 0 on SDA
+		else 	res|=_BV(i);	    //IF 1 on SDA
+ 46e:	08 e1       	ldi	r16, 0x18	; 24
+ 470:	e1 e0       	ldi	r30, 0x01	; 1
+ 472:	f0 e0       	ldi	r31, 0x00	; 0
+ 474:	12 e9       	ldi	r17, 0x92	; 146
+	if (sensor_num==0)	sensor_pin=SENSOR0_PIN;
+	else sensor_pin=SENSOR1_PIN;
+
+	for(i=0;i<16;i++)
+	{
+		SENSOR_DDR|=(1<<sensor_pin);		
+ 476:	84 b3       	in	r24, 0x14	; 20
+ 478:	8a 2b       	or	r24, r26
+ 47a:	84 bb       	out	0x14, r24	; 20
+ 47c:	8f 2d       	mov	r24, r15
+ 47e:	8a 95       	dec	r24
+ 480:	f1 f7       	brne	.-4      	; 0x47e <__stack+0x1f>
+		_delay_us(6);
+		SENSOR_DDR&=~(1<<sensor_pin);		
+ 482:	84 b3       	in	r24, 0x14	; 20
+ 484:	8b 23       	and	r24, r27
+ 486:	84 bb       	out	0x14, r24	; 20
+ 488:	80 2f       	mov	r24, r16
+ 48a:	8a 95       	dec	r24
+ 48c:	f1 f7       	brne	.-4      	; 0x48a <__stack+0x2b>
+		_delay_us(9);
+
+		if ((SENSOR_PIN & (1<<sensor_pin))==0x00) res&=~_BV(i);	//If 0 on SDA
+ 48e:	83 b3       	in	r24, 0x13	; 19
+ 490:	90 e0       	ldi	r25, 0x00	; 0
+ 492:	86 23       	and	r24, r22
+ 494:	97 23       	and	r25, r23
+ 496:	89 2b       	or	r24, r25
+ 498:	61 f4       	brne	.+24     	; 0x4b2 <__stack+0x53>
+ 49a:	cf 01       	movw	r24, r30
+ 49c:	04 2e       	mov	r0, r20
+ 49e:	02 c0       	rjmp	.+4      	; 0x4a4 <__stack+0x45>
+ 4a0:	88 0f       	add	r24, r24
+ 4a2:	99 1f       	adc	r25, r25
+ 4a4:	0a 94       	dec	r0
+ 4a6:	e2 f7       	brpl	.-8      	; 0x4a0 <__stack+0x41>
+ 4a8:	80 95       	com	r24
+ 4aa:	90 95       	com	r25
+ 4ac:	28 23       	and	r18, r24
+ 4ae:	39 23       	and	r19, r25
+ 4b0:	09 c0       	rjmp	.+18     	; 0x4c4 <__stack+0x65>
+		else 	res|=_BV(i);	    //IF 1 on SDA
+ 4b2:	cf 01       	movw	r24, r30
+ 4b4:	04 2e       	mov	r0, r20
+ 4b6:	02 c0       	rjmp	.+4      	; 0x4bc <__stack+0x5d>
+ 4b8:	88 0f       	add	r24, r24
+ 4ba:	99 1f       	adc	r25, r25
+ 4bc:	0a 94       	dec	r0
+ 4be:	e2 f7       	brpl	.-8      	; 0x4b8 <__stack+0x59>
+ 4c0:	28 2b       	or	r18, r24
+ 4c2:	39 2b       	or	r19, r25
+ 4c4:	81 2f       	mov	r24, r17
+ 4c6:	8a 95       	dec	r24
+ 4c8:	f1 f7       	brne	.-4      	; 0x4c6 <__stack+0x67>
+ 4ca:	4f 5f       	subi	r20, 0xFF	; 255
+ 4cc:	5f 4f       	sbci	r21, 0xFF	; 255
+	uint16_t res=0;
+
+	if (sensor_num==0)	sensor_pin=SENSOR0_PIN;
+	else sensor_pin=SENSOR1_PIN;
+
+	for(i=0;i<16;i++)
+ 4ce:	40 31       	cpi	r20, 0x10	; 16
+ 4d0:	51 05       	cpc	r21, r1
+ 4d2:	89 f6       	brne	.-94     	; 0x476 <__stack+0x17>
+		else 	res|=_BV(i);	    //IF 1 on SDA
+				
+		_delay_us(55);
+	}
+	return res;
+}
+ 4d4:	c9 01       	movw	r24, r18
+ 4d6:	1f 91       	pop	r17
+ 4d8:	0f 91       	pop	r16
+ 4da:	ff 90       	pop	r15
+ 4dc:	08 95       	ret
+
+000004de <main>:
+//------------------------------------------------------------------------------------
+
+int main(void)
+{
+ 4de:	9f 92       	push	r9
+ 4e0:	af 92       	push	r10
+ 4e2:	bf 92       	push	r11
+ 4e4:	cf 92       	push	r12
+ 4e6:	df 92       	push	r13
+ 4e8:	ef 92       	push	r14
+ 4ea:	ff 92       	push	r15
+ 4ec:	0f 93       	push	r16
+ 4ee:	1f 93       	push	r17
+ 4f0:	cf 93       	push	r28
+ 4f2:	df 93       	push	r29
+	//read from EEPROM saved value & coolerState state
+	#if STANDALONE_MODE == 1
+		setData[0]= eeprom_read_word (&savedSetData);
+		coolerState = eeprom_read_byte(&savedCoolerState);
+	#else
+		setData[0]=1730;
+ 4f4:	82 ec       	ldi	r24, 0xC2	; 194
+ 4f6:	96 e0       	ldi	r25, 0x06	; 6
+ 4f8:	90 93 72 00 	sts	0x0072, r25
+ 4fc:	80 93 71 00 	sts	0x0071, r24
+		coolerState=COOLER_OFF;
+ 500:	10 92 83 00 	sts	0x0083, r1
+	#endif
+	//init variables
+	for (i=0;i<SENSOR_COUNT;i++)
+		sensorData[i]=0;
+ 504:	10 92 74 00 	sts	0x0074, r1
+ 508:	10 92 73 00 	sts	0x0073, r1
+ 50c:	10 92 76 00 	sts	0x0076, r1
+ 510:	10 92 75 00 	sts	0x0075, r1
+ 514:	80 e0       	ldi	r24, 0x00	; 0
+ 516:	90 e0       	ldi	r25, 0x00	; 0
+
+void clearBuf (void)
+{
+	uint8_t i;
+	for (i=0;i<BUFF_SIZE;i++)
+	rxBuf[i]=txBuf[i]=0;
+ 518:	fc 01       	movw	r30, r24
+ 51a:	eb 59       	subi	r30, 0x9B	; 155
+ 51c:	ff 4f       	sbci	r31, 0xFF	; 255
+ 51e:	10 82       	st	Z, r1
+ 520:	fc 01       	movw	r30, r24
+ 522:	e9 58       	subi	r30, 0x89	; 137
+ 524:	ff 4f       	sbci	r31, 0xFF	; 255
+ 526:	10 82       	st	Z, r1
+ 528:	01 96       	adiw	r24, 0x01	; 1
+}
+
+void clearBuf (void)
+{
+	uint8_t i;
+	for (i=0;i<BUFF_SIZE;i++)
+ 52a:	8b 30       	cpi	r24, 0x0B	; 11
+ 52c:	91 05       	cpc	r25, r1
+ 52e:	a1 f7       	brne	.-24     	; 0x518 <main+0x3a>
+	#endif
+	//init variables
+	for (i=0;i<SENSOR_COUNT;i++)
+		sensorData[i]=0;
+	clearBuf ();
+	U=0.0;
+ 530:	20 e0       	ldi	r18, 0x00	; 0
+ 532:	30 e0       	ldi	r19, 0x00	; 0
+ 534:	40 e0       	ldi	r20, 0x00	; 0
+ 536:	50 e0       	ldi	r21, 0x00	; 0
+ 538:	20 93 8c 00 	sts	0x008C, r18
+ 53c:	30 93 8d 00 	sts	0x008D, r19
+ 540:	40 93 8e 00 	sts	0x008E, r20
+ 544:	50 93 8f 00 	sts	0x008F, r21
+	Kp=KP_INIT;
+ 548:	8a e0       	ldi	r24, 0x0A	; 10
+ 54a:	97 ed       	ldi	r25, 0xD7	; 215
+ 54c:	a3 ea       	ldi	r26, 0xA3	; 163
+ 54e:	bc e3       	ldi	r27, 0x3C	; 60
+ 550:	80 93 88 00 	sts	0x0088, r24
+ 554:	90 93 89 00 	sts	0x0089, r25
+ 558:	a0 93 8a 00 	sts	0x008A, r26
+ 55c:	b0 93 8b 00 	sts	0x008B, r27
+	E=0;
+ 560:	20 93 84 00 	sts	0x0084, r18
+ 564:	30 93 85 00 	sts	0x0085, r19
+ 568:	40 93 86 00 	sts	0x0086, r20
+ 56c:	50 93 87 00 	sts	0x0087, r21
+	//Init ports, UART, PWM
+	SENSOR_PORT&=~((1<<SENSOR0_PIN)|(1<<SENSOR1_PIN));     	
+ 570:	85 b3       	in	r24, 0x15	; 21
+ 572:	83 7f       	andi	r24, 0xF3	; 243
+ 574:	85 bb       	out	0x15, r24	; 21
+	SENSOR_DDR&=~((1<<SENSOR0_PIN)|(1<<SENSOR1_PIN));		
+ 576:	84 b3       	in	r24, 0x14	; 20
+ 578:	83 7f       	andi	r24, 0xF3	; 243
+ 57a:	84 bb       	out	0x14, r24	; 20
+
+	#if PWM_MODE == 1
+		initPWM();
+	#else
+		TEC_PORT&=~(1<<TEC_PIN);
+ 57c:	95 98       	cbi	0x12, 5	; 18
+		TEC_DDR|=(1<<TEC_PIN);
+ 57e:	8d 9a       	sbi	0x11, 5	; 17
+//------------------------------------------------------------------------------------
+//UART
+
+void uartInit(void)
+{
+	UBRRH = UART_BAUDRATE_H;		// Init UART baudrate
+ 580:	10 bc       	out	0x20, r1	; 32
+	UBRRL = UART_BAUDRATE_L;
+ 582:	83 e3       	ldi	r24, 0x33	; 51
+ 584:	89 b9       	out	0x09, r24	; 9
+
+	UCSRB = (1<<RXEN)|(1<<TXEN)|(1 << RXCIE);	// TX, RX enable, RX interrupt enable
+ 586:	88 e9       	ldi	r24, 0x98	; 152
+ 588:	8a b9       	out	0x0a, r24	; 10
+	UCSRC = (1<<URSEL)|(1<<UCSZ1)|(1<<UCSZ0);
+ 58a:	86 e8       	ldi	r24, 0x86	; 134
+ 58c:	80 bd       	out	0x20, r24	; 32
+	#else
+		TEC_PORT&=~(1<<TEC_PIN);
+		TEC_DDR|=(1<<TEC_PIN);
+	#endif
+	uartInit();	
+	sei();
+ 58e:	78 94       	sei
+ 590:	01 e0       	ldi	r16, 0x01	; 1
+    milliseconds can be achieved.
+ */
+void
+_delay_loop_2(uint16_t __count)
+{
+	__asm__ volatile (
+ 592:	10 e2       	ldi	r17, 0x20	; 32
+ 594:	a1 2e       	mov	r10, r17
+ 596:	1e e4       	ldi	r17, 0x4E	; 78
+ 598:	b1 2e       	mov	r11, r17
+				{
+					sendDS18b20(SKIP_ROM,i);
+					sendDS18b20(START_CONVERSION,i);
+					errorCode=0;
+				}
+				else errorCode|=(1<<i);
+ 59a:	b1 e0       	ldi	r27, 0x01	; 1
+ 59c:	eb 2e       	mov	r14, r27
+ 59e:	f1 2c       	mov	r15, r1
+						if ((val&0x01)!=0x00) fract=fract+65;
+						if ((val&0x02)!=0x00) fract=fract+125;
+						if ((val&0x04)!=0x00) fract=fract+250;
+						if ((val&0x08)!=0x00) fract=fract+500;
+						val=(val>>4)*10+fract/100;
+						if (sign==1) val=OFFSET-val;
+ 5a0:	c1 2c       	mov	r12, r1
+ 5a2:	a5 e0       	ldi	r26, 0x05	; 5
+ 5a4:	da 2e       	mov	r13, r26
+					}
+				#else
+					if (sensorData[0]>(setData[0]+HYSTERESIS)) 
+					{
+						TEC_PORT|=(1<<TEC_PIN);
+						coolerPower=0xff;
+ 5a6:	99 24       	eor	r9, r9
+ 5a8:	9a 94       	dec	r9
+ 5aa:	01 c0       	rjmp	.+2      	; 0x5ae <main+0xd0>
+	#else
+		TEC_PORT&=~(1<<TEC_PIN);
+		TEC_DDR|=(1<<TEC_PIN);
+	#endif
+	uartInit();	
+	sei();
+ 5ac:	00 e0       	ldi	r16, 0x00	; 0
+ 5ae:	12 e0       	ldi	r17, 0x02	; 2
+ 5b0:	c5 01       	movw	r24, r10
+ 5b2:	01 97       	sbiw	r24, 0x01	; 1
+ 5b4:	f1 f7       	brne	.-4      	; 0x5b2 <main+0xd4>
+	while (1)
+	{
+		_delay_ms(10);
+		i++;
+ 5b6:	1f 5f       	subi	r17, 0xFF	; 255
+		if (packetReceived!=0) processPacket();
+ 5b8:	80 91 60 00 	lds	r24, 0x0060
+ 5bc:	88 23       	and	r24, r24
+ 5be:	11 f0       	breq	.+4      	; 0x5c4 <main+0xe6>
+ 5c0:	0e 94 36 01 	call	0x26c	; 0x26c <processPacket>
+		if (i>=35)
+ 5c4:	13 32       	cpi	r17, 0x23	; 35
+ 5c6:	a1 f7       	brne	.-24     	; 0x5b0 <main+0xd2>
+		{
+			i=0;
+			//send command from start measurement to sensors
+			errorCode=0;
+ 5c8:	10 92 62 00 	sts	0x0062, r1
+ 5cc:	c0 e0       	ldi	r28, 0x00	; 0
+ 5ce:	d0 e0       	ldi	r29, 0x00	; 0
+			for (i=0;i<SENSOR_COUNT;i++)
+			{
+				if (presentDS18b20(i)==1)
+ 5d0:	8c 2f       	mov	r24, r28
+ 5d2:	0e 94 c1 01 	call	0x382	; 0x382 <presentDS18b20>
+ 5d6:	81 30       	cpi	r24, 0x01	; 1
+ 5d8:	59 f4       	brne	.+22     	; 0x5f0 <main+0x112>
+				{
+					sendDS18b20(SKIP_ROM,i);
+ 5da:	8c ec       	ldi	r24, 0xCC	; 204
+ 5dc:	6c 2f       	mov	r22, r28
+ 5de:	0e 94 eb 01 	call	0x3d6	; 0x3d6 <sendDS18b20>
+					sendDS18b20(START_CONVERSION,i);
+ 5e2:	84 e4       	ldi	r24, 0x44	; 68
+ 5e4:	6c 2f       	mov	r22, r28
+ 5e6:	0e 94 eb 01 	call	0x3d6	; 0x3d6 <sendDS18b20>
+					errorCode=0;
+ 5ea:	10 92 62 00 	sts	0x0062, r1
+ 5ee:	0c c0       	rjmp	.+24     	; 0x608 <main+0x12a>
+				}
+				else errorCode|=(1<<i);
+ 5f0:	97 01       	movw	r18, r14
+ 5f2:	0c 2e       	mov	r0, r28
+ 5f4:	02 c0       	rjmp	.+4      	; 0x5fa <main+0x11c>
+ 5f6:	22 0f       	add	r18, r18
+ 5f8:	33 1f       	adc	r19, r19
+ 5fa:	0a 94       	dec	r0
+ 5fc:	e2 f7       	brpl	.-8      	; 0x5f6 <main+0x118>
+ 5fe:	80 91 62 00 	lds	r24, 0x0062
+ 602:	82 2b       	or	r24, r18
+ 604:	80 93 62 00 	sts	0x0062, r24
+ 608:	21 96       	adiw	r28, 0x01	; 1
+		if (i>=35)
+		{
+			i=0;
+			//send command from start measurement to sensors
+			errorCode=0;
+			for (i=0;i<SENSOR_COUNT;i++)
+ 60a:	c2 30       	cpi	r28, 0x02	; 2
+ 60c:	d1 05       	cpc	r29, r1
+ 60e:	01 f7       	brne	.-64     	; 0x5d0 <main+0xf2>
+					sendDS18b20(START_CONVERSION,i);
+					errorCode=0;
+				}
+				else errorCode|=(1<<i);
+			}
+			if (firstConv==_YES) firstConv=_NO;
+ 610:	01 30       	cpi	r16, 0x01	; 1
+ 612:	61 f2       	breq	.-104    	; 0x5ac <main+0xce>
+ 614:	03 e7       	ldi	r16, 0x73	; 115
+ 616:	10 e0       	ldi	r17, 0x00	; 0
+ 618:	c0 e0       	ldi	r28, 0x00	; 0
+ 61a:	d0 e0       	ldi	r29, 0x00	; 0
+			else
+			{		 
+				//receive measured data from sensors
+				for (i=0;i<SENSOR_COUNT;i++)
+				{
+					if (presentDS18b20(i)==1)
+ 61c:	8c 2f       	mov	r24, r28
+ 61e:	0e 94 c1 01 	call	0x382	; 0x382 <presentDS18b20>
+ 622:	81 30       	cpi	r24, 0x01	; 1
+ 624:	09 f0       	breq	.+2      	; 0x628 <main+0x14a>
+ 626:	49 c0       	rjmp	.+146    	; 0x6ba <main+0x1dc>
+					{
+						sendDS18b20(SKIP_ROM,i);
+ 628:	8c ec       	ldi	r24, 0xCC	; 204
+ 62a:	6c 2f       	mov	r22, r28
+ 62c:	0e 94 eb 01 	call	0x3d6	; 0x3d6 <sendDS18b20>
+						sendDS18b20(GET_DATA,i);
+ 630:	8e eb       	ldi	r24, 0xBE	; 190
+ 632:	6c 2f       	mov	r22, r28
+ 634:	0e 94 eb 01 	call	0x3d6	; 0x3d6 <sendDS18b20>
+						val=receiveDS18b20(i);
+ 638:	8c 2f       	mov	r24, r28
+ 63a:	0e 94 1f 02 	call	0x43e	; 0x43e <receiveDS18b20>
+						if ((val&0x8000)!=0x00)
+ 63e:	97 fd       	sbrc	r25, 7
+ 640:	02 c0       	rjmp	.+4      	; 0x646 <main+0x168>
+ 642:	e0 e0       	ldi	r30, 0x00	; 0
+ 644:	04 c0       	rjmp	.+8      	; 0x64e <main+0x170>
+						{
+							sign=1;
+							val=0xffff-val+1;
+ 646:	90 95       	com	r25
+ 648:	81 95       	neg	r24
+ 64a:	9f 4f       	sbci	r25, 0xFF	; 255
+ 64c:	e1 e0       	ldi	r30, 0x01	; 1
+						}
+						else sign=0;
+						fract=0;
+						if ((val&0x01)!=0x00) fract=fract+65;
+ 64e:	80 fd       	sbrc	r24, 0
+ 650:	03 c0       	rjmp	.+6      	; 0x658 <main+0x17a>
+ 652:	40 e0       	ldi	r20, 0x00	; 0
+ 654:	50 e0       	ldi	r21, 0x00	; 0
+ 656:	02 c0       	rjmp	.+4      	; 0x65c <main+0x17e>
+ 658:	41 e4       	ldi	r20, 0x41	; 65
+ 65a:	50 e0       	ldi	r21, 0x00	; 0
+						if ((val&0x02)!=0x00) fract=fract+125;
+ 65c:	81 ff       	sbrs	r24, 1
+ 65e:	02 c0       	rjmp	.+4      	; 0x664 <main+0x186>
+ 660:	43 58       	subi	r20, 0x83	; 131
+ 662:	5f 4f       	sbci	r21, 0xFF	; 255
+						if ((val&0x04)!=0x00) fract=fract+250;
+ 664:	82 ff       	sbrs	r24, 2
+ 666:	02 c0       	rjmp	.+4      	; 0x66c <main+0x18e>
+ 668:	46 50       	subi	r20, 0x06	; 6
+ 66a:	5f 4f       	sbci	r21, 0xFF	; 255
+						if ((val&0x08)!=0x00) fract=fract+500;
+ 66c:	83 ff       	sbrs	r24, 3
+ 66e:	02 c0       	rjmp	.+4      	; 0x674 <main+0x196>
+ 670:	4c 50       	subi	r20, 0x0C	; 12
+ 672:	5e 4f       	sbci	r21, 0xFE	; 254
+						val=(val>>4)*10+fract/100;
+ 674:	f4 e0       	ldi	r31, 0x04	; 4
+ 676:	96 95       	lsr	r25
+ 678:	87 95       	ror	r24
+ 67a:	fa 95       	dec	r31
+ 67c:	e1 f7       	brne	.-8      	; 0x676 <main+0x198>
+ 67e:	9c 01       	movw	r18, r24
+ 680:	73 e0       	ldi	r23, 0x03	; 3
+ 682:	22 0f       	add	r18, r18
+ 684:	33 1f       	adc	r19, r19
+ 686:	7a 95       	dec	r23
+ 688:	e1 f7       	brne	.-8      	; 0x682 <main+0x1a4>
+ 68a:	88 0f       	add	r24, r24
+ 68c:	99 1f       	adc	r25, r25
+ 68e:	28 0f       	add	r18, r24
+ 690:	39 1f       	adc	r19, r25
+ 692:	ca 01       	movw	r24, r20
+ 694:	64 e6       	ldi	r22, 0x64	; 100
+ 696:	70 e0       	ldi	r23, 0x00	; 0
+ 698:	0e 94 94 03 	call	0x728	; 0x728 <__udivmodhi4>
+ 69c:	62 0f       	add	r22, r18
+ 69e:	73 1f       	adc	r23, r19
+						if (sign==1) val=OFFSET-val;
+ 6a0:	e1 30       	cpi	r30, 0x01	; 1
+ 6a2:	29 f4       	brne	.+10     	; 0x6ae <main+0x1d0>
+ 6a4:	c6 01       	movw	r24, r12
+ 6a6:	86 1b       	sub	r24, r22
+ 6a8:	97 0b       	sbc	r25, r23
+ 6aa:	bc 01       	movw	r22, r24
+ 6ac:	02 c0       	rjmp	.+4      	; 0x6b2 <main+0x1d4>
+						else val=val+OFFSET;
+ 6ae:	60 50       	subi	r22, 0x00	; 0
+ 6b0:	7b 4f       	sbci	r23, 0xFB	; 251
+						sensorData[i]=val;
+ 6b2:	f8 01       	movw	r30, r16
+ 6b4:	71 83       	std	Z+1, r23	; 0x01
+ 6b6:	60 83       	st	Z, r22
+ 6b8:	0c c0       	rjmp	.+24     	; 0x6d2 <main+0x1f4>
+					}
+					else errorCode|=(1<<i);
+ 6ba:	97 01       	movw	r18, r14
+ 6bc:	0c 2e       	mov	r0, r28
+ 6be:	02 c0       	rjmp	.+4      	; 0x6c4 <main+0x1e6>
+ 6c0:	22 0f       	add	r18, r18
+ 6c2:	33 1f       	adc	r19, r19
+ 6c4:	0a 94       	dec	r0
+ 6c6:	e2 f7       	brpl	.-8      	; 0x6c0 <main+0x1e2>
+ 6c8:	80 91 62 00 	lds	r24, 0x0062
+ 6cc:	82 2b       	or	r24, r18
+ 6ce:	80 93 62 00 	sts	0x0062, r24
+ 6d2:	21 96       	adiw	r28, 0x01	; 1
+ 6d4:	0e 5f       	subi	r16, 0xFE	; 254
+ 6d6:	1f 4f       	sbci	r17, 0xFF	; 255
+			}
+			if (firstConv==_YES) firstConv=_NO;
+			else
+			{		 
+				//receive measured data from sensors
+				for (i=0;i<SENSOR_COUNT;i++)
+ 6d8:	c2 30       	cpi	r28, 0x02	; 2
+ 6da:	d1 05       	cpc	r29, r1
+ 6dc:	09 f0       	breq	.+2      	; 0x6e0 <main+0x202>
+ 6de:	9e cf       	rjmp	.-196    	; 0x61c <main+0x13e>
+						E=0.0;
+						correction=0;
+					}				
+					else if (getPWM()!=0) onPWM();
+				#else
+					if (coolerState==COOLER_OFF) 
+ 6e0:	80 91 83 00 	lds	r24, 0x0083
+ 6e4:	88 23       	and	r24, r24
+ 6e6:	21 f4       	brne	.+8      	; 0x6f0 <main+0x212>
+					{
+						TEC_PORT&=~(1<<TEC_PIN);
+ 6e8:	95 98       	cbi	0x12, 5	; 18
+						coolerPower=0x00;
+ 6ea:	10 92 63 00 	sts	0x0063, r1
+ 6ee:	03 c0       	rjmp	.+6      	; 0x6f6 <main+0x218>
+					}
+					else
+					{
+						TEC_PORT|=(1<<TEC_PIN);																					
+ 6f0:	95 9a       	sbi	0x12, 5	; 18
+						coolerPower=0xff;
+ 6f2:	90 92 63 00 	sts	0x0063, r9
+						if (U<=0.0) 	U=0.0;		
+						correction=(uint8_t) U;
+						setPWM(correction); 				
+					}
+				#else
+					if (sensorData[0]>(setData[0]+HYSTERESIS)) 
+ 6f6:	40 91 73 00 	lds	r20, 0x0073
+ 6fa:	50 91 74 00 	lds	r21, 0x0074
+ 6fe:	20 91 71 00 	lds	r18, 0x0071
+ 702:	30 91 72 00 	lds	r19, 0x0072
+ 706:	c9 01       	movw	r24, r18
+ 708:	01 96       	adiw	r24, 0x01	; 1
+ 70a:	84 17       	cp	r24, r20
+ 70c:	95 07       	cpc	r25, r21
+ 70e:	20 f4       	brcc	.+8      	; 0x718 <main+0x23a>
+					{
+						TEC_PORT|=(1<<TEC_PIN);
+ 710:	95 9a       	sbi	0x12, 5	; 18
+						coolerPower=0xff;
+ 712:	90 92 63 00 	sts	0x0063, r9
+ 716:	4a cf       	rjmp	.-364    	; 0x5ac <main+0xce>
+					}
+					else if (sensorData[0]<(setData[0]))
+ 718:	42 17       	cp	r20, r18
+ 71a:	53 07       	cpc	r21, r19
+ 71c:	08 f0       	brcs	.+2      	; 0x720 <main+0x242>
+ 71e:	46 cf       	rjmp	.-372    	; 0x5ac <main+0xce>
+					{
+						TEC_PORT&=~(1<<TEC_PIN);
+ 720:	95 98       	cbi	0x12, 5	; 18
+						coolerPower=0x00;
+ 722:	10 92 63 00 	sts	0x0063, r1
+ 726:	42 cf       	rjmp	.-380    	; 0x5ac <main+0xce>
+
+00000728 <__udivmodhi4>:
+ 728:	aa 1b       	sub	r26, r26
+ 72a:	bb 1b       	sub	r27, r27
+ 72c:	51 e1       	ldi	r21, 0x11	; 17
+ 72e:	07 c0       	rjmp	.+14     	; 0x73e <__udivmodhi4_ep>
+
+00000730 <__udivmodhi4_loop>:
+ 730:	aa 1f       	adc	r26, r26
+ 732:	bb 1f       	adc	r27, r27
+ 734:	a6 17       	cp	r26, r22
+ 736:	b7 07       	cpc	r27, r23
+ 738:	10 f0       	brcs	.+4      	; 0x73e <__udivmodhi4_ep>
+ 73a:	a6 1b       	sub	r26, r22
+ 73c:	b7 0b       	sbc	r27, r23
+
+0000073e <__udivmodhi4_ep>:
+ 73e:	88 1f       	adc	r24, r24
+ 740:	99 1f       	adc	r25, r25
+ 742:	5a 95       	dec	r21
+ 744:	a9 f7       	brne	.-22     	; 0x730 <__udivmodhi4_loop>
+ 746:	80 95       	com	r24
+ 748:	90 95       	com	r25
+ 74a:	bc 01       	movw	r22, r24
+ 74c:	cd 01       	movw	r24, r26
+ 74e:	08 95       	ret
+
+00000750 <_exit>:
+ 750:	f8 94       	cli
+
+00000752 <__stop_program>:
+ 752:	ff cf       	rjmp	.-2      	; 0x752 <__stop_program>

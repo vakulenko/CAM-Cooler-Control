@@ -1,4 +1,5 @@
-Preg.o: ../Preg.c c:/winavr-20100110/lib/gcc/../../avr/include/avr/io.h \
+TEC_board.o: ../TEC_board.c \
+  c:/winavr-20100110/lib/gcc/../../avr/include/avr/io.h \
   c:/winavr-20100110/lib/gcc/../../avr/include/avr/sfr_defs.h \
   c:/winavr-20100110/lib/gcc/../../avr/include/inttypes.h \
   c:/winavr-20100110/lib/gcc/../../avr/include/stdint.h \
