@@ -35,7 +35,7 @@
 #define TEC_DDR		DDRD
 #define TEC_PIN		5
 
-#define COOLER_ON		1
+#define COOLER_ON	1
 #define COOLER_OFF	0
 
 //ds18b20 cmd
@@ -537,15 +537,18 @@ int main(void)
 						setPWM(correction); 				
 					}
 				#else
-					if (sensorData[0]>(setData[0]+HYSTERESIS)) 
+					if (coolerState==COOLER_ON)
 					{
-						TEC_PORT|=(1<<TEC_PIN);
-						coolerPower=0xff;
-					}
-					else if (sensorData[0]<(setData[0]))
-					{
-						TEC_PORT&=~(1<<TEC_PIN);
-						coolerPower=0x00;
+						if (sensorData[0]>(setData[0]+HYSTERESIS)) 
+						{
+							TEC_PORT|=(1<<TEC_PIN);
+							coolerPower=0xff;
+						}
+						else if (sensorData[0]<(setData[0]))
+						{
+							TEC_PORT&=~(1<<TEC_PIN);
+							coolerPower=0x00;
+						}
 					}
 				#endif
 			}

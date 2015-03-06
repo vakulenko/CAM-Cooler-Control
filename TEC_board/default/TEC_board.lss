@@ -3,29 +3,29 @@ TEC_board.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000754  00000000  00000000  00000094  2**1
+  0 .text         0000074e  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .bss          00000030  00800060  00800060  000007e8  2**0
+  1 .bss          00000030  00800060  00800060  000007e2  2**0
                   ALLOC
-  2 .eeprom       00000003  00810000  00810000  000007e8  2**0
+  2 .eeprom       00000003  00810000  00810000  000007e2  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  3 .debug_aranges 00000020  00000000  00000000  000007eb  2**0
+  3 .debug_aranges 00000020  00000000  00000000  000007e5  2**0
                   CONTENTS, READONLY, DEBUGGING
-  4 .debug_pubnames 0000022b  00000000  00000000  0000080b  2**0
+  4 .debug_pubnames 0000022b  00000000  00000000  00000805  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000a4b  00000000  00000000  00000a36  2**0
+  5 .debug_info   00000a4b  00000000  00000000  00000a30  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000302  00000000  00000000  00001481  2**0
+  6 .debug_abbrev 00000302  00000000  00000000  0000147b  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   0000094e  00000000  00000000  00001783  2**0
+  7 .debug_line   0000093e  00000000  00000000  0000177d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000160  00000000  00000000  000020d4  2**2
+  8 .debug_frame  00000160  00000000  00000000  000020bc  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    0000029e  00000000  00000000  00002234  2**0
+  9 .debug_str    0000029e  00000000  00000000  0000221c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    000003b0  00000000  00000000  000024d2  2**0
+ 10 .debug_loc    000003e0  00000000  00000000  000024ba  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000258  00000000  00000000  00002882  2**0
+ 11 .debug_ranges 00000258  00000000  00000000  0000289a  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -75,7 +75,7 @@ Disassembly of section .text:
   6c:	b1 07       	cpc	r27, r17
   6e:	e1 f7       	brne	.-8      	; 0x68 <.do_clear_bss_loop>
   70:	0e 94 6f 02 	call	0x4de	; 0x4de <main>
-  74:	0c 94 a8 03 	jmp	0x750	; 0x750 <_exit>
+  74:	0c 94 a5 03 	jmp	0x74a	; 0x74a <_exit>
 
 00000078 <__bad_interrupt>:
   78:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -1345,11 +1345,11 @@ _delay_loop_2(uint16_t __count)
  5a0:	c1 2c       	mov	r12, r1
  5a2:	a5 e0       	ldi	r26, 0x05	; 5
  5a4:	da 2e       	mov	r13, r26
+						coolerPower=0x00;
 					}
-				#else
-					if (sensorData[0]>(setData[0]+HYSTERESIS)) 
+					else
 					{
-						TEC_PORT|=(1<<TEC_PIN);
+						TEC_PORT|=(1<<TEC_PIN);																					
 						coolerPower=0xff;
  5a6:	99 24       	eor	r9, r9
  5a8:	9a 94       	dec	r9
@@ -1518,7 +1518,7 @@ _delay_loop_2(uint16_t __count)
  692:	ca 01       	movw	r24, r20
  694:	64 e6       	ldi	r22, 0x64	; 100
  696:	70 e0       	ldi	r23, 0x00	; 0
- 698:	0e 94 94 03 	call	0x728	; 0x728 <__udivmodhi4>
+ 698:	0e 94 91 03 	call	0x722	; 0x722 <__udivmodhi4>
  69c:	62 0f       	add	r22, r18
  69e:	73 1f       	adc	r23, r19
 						if (sign==1) val=OFFSET-val;
@@ -1570,82 +1570,82 @@ _delay_loop_2(uint16_t __count)
 					if (coolerState==COOLER_OFF) 
  6e0:	80 91 83 00 	lds	r24, 0x0083
  6e4:	88 23       	and	r24, r24
- 6e6:	21 f4       	brne	.+8      	; 0x6f0 <main+0x212>
-					{
+ 6e6:	c9 f0       	breq	.+50     	; 0x71a <main+0x23c>
 						TEC_PORT&=~(1<<TEC_PIN);
- 6e8:	95 98       	cbi	0x12, 5	; 18
 						coolerPower=0x00;
- 6ea:	10 92 63 00 	sts	0x0063, r1
- 6ee:	03 c0       	rjmp	.+6      	; 0x6f6 <main+0x218>
 					}
 					else
 					{
 						TEC_PORT|=(1<<TEC_PIN);																					
- 6f0:	95 9a       	sbi	0x12, 5	; 18
+ 6e8:	95 9a       	sbi	0x12, 5	; 18
 						coolerPower=0xff;
- 6f2:	90 92 63 00 	sts	0x0063, r9
+ 6ea:	90 92 63 00 	sts	0x0063, r9
 						if (U<=0.0) 	U=0.0;		
 						correction=(uint8_t) U;
 						setPWM(correction); 				
 					}
 				#else
-					if (sensorData[0]>(setData[0]+HYSTERESIS)) 
- 6f6:	40 91 73 00 	lds	r20, 0x0073
- 6fa:	50 91 74 00 	lds	r21, 0x0074
- 6fe:	20 91 71 00 	lds	r18, 0x0071
- 702:	30 91 72 00 	lds	r19, 0x0072
- 706:	c9 01       	movw	r24, r18
- 708:	01 96       	adiw	r24, 0x01	; 1
- 70a:	84 17       	cp	r24, r20
- 70c:	95 07       	cpc	r25, r21
- 70e:	20 f4       	brcc	.+8      	; 0x718 <main+0x23a>
+					if (coolerState==COOLER_ON)
+ 6ee:	81 30       	cpi	r24, 0x01	; 1
+ 6f0:	09 f0       	breq	.+2      	; 0x6f4 <main+0x216>
+ 6f2:	5c cf       	rjmp	.-328    	; 0x5ac <main+0xce>
 					{
-						TEC_PORT|=(1<<TEC_PIN);
- 710:	95 9a       	sbi	0x12, 5	; 18
-						coolerPower=0xff;
- 712:	90 92 63 00 	sts	0x0063, r9
- 716:	4a cf       	rjmp	.-364    	; 0x5ac <main+0xce>
-					}
-					else if (sensorData[0]<(setData[0]))
- 718:	42 17       	cp	r20, r18
- 71a:	53 07       	cpc	r21, r19
- 71c:	08 f0       	brcs	.+2      	; 0x720 <main+0x242>
- 71e:	46 cf       	rjmp	.-372    	; 0x5ac <main+0xce>
-					{
-						TEC_PORT&=~(1<<TEC_PIN);
- 720:	95 98       	cbi	0x12, 5	; 18
-						coolerPower=0x00;
- 722:	10 92 63 00 	sts	0x0063, r1
- 726:	42 cf       	rjmp	.-380    	; 0x5ac <main+0xce>
+						if (sensorData[0]>(setData[0]+HYSTERESIS)) 
+ 6f4:	40 91 73 00 	lds	r20, 0x0073
+ 6f8:	50 91 74 00 	lds	r21, 0x0074
+ 6fc:	20 91 71 00 	lds	r18, 0x0071
+ 700:	30 91 72 00 	lds	r19, 0x0072
+ 704:	c9 01       	movw	r24, r18
+ 706:	01 96       	adiw	r24, 0x01	; 1
+ 708:	84 17       	cp	r24, r20
+ 70a:	95 07       	cpc	r25, r21
+ 70c:	10 f4       	brcc	.+4      	; 0x712 <main+0x234>
+						{
+							TEC_PORT|=(1<<TEC_PIN);
+ 70e:	95 9a       	sbi	0x12, 5	; 18
+ 710:	4d cf       	rjmp	.-358    	; 0x5ac <main+0xce>
+							coolerPower=0xff;
+						}
+						else if (sensorData[0]<(setData[0]))
+ 712:	42 17       	cp	r20, r18
+ 714:	53 07       	cpc	r21, r19
+ 716:	08 f0       	brcs	.+2      	; 0x71a <main+0x23c>
+ 718:	49 cf       	rjmp	.-366    	; 0x5ac <main+0xce>
+						{
+							TEC_PORT&=~(1<<TEC_PIN);
+ 71a:	95 98       	cbi	0x12, 5	; 18
+							coolerPower=0x00;
+ 71c:	10 92 63 00 	sts	0x0063, r1
+ 720:	45 cf       	rjmp	.-374    	; 0x5ac <main+0xce>
 
-00000728 <__udivmodhi4>:
- 728:	aa 1b       	sub	r26, r26
- 72a:	bb 1b       	sub	r27, r27
- 72c:	51 e1       	ldi	r21, 0x11	; 17
- 72e:	07 c0       	rjmp	.+14     	; 0x73e <__udivmodhi4_ep>
+00000722 <__udivmodhi4>:
+ 722:	aa 1b       	sub	r26, r26
+ 724:	bb 1b       	sub	r27, r27
+ 726:	51 e1       	ldi	r21, 0x11	; 17
+ 728:	07 c0       	rjmp	.+14     	; 0x738 <__udivmodhi4_ep>
 
-00000730 <__udivmodhi4_loop>:
- 730:	aa 1f       	adc	r26, r26
- 732:	bb 1f       	adc	r27, r27
- 734:	a6 17       	cp	r26, r22
- 736:	b7 07       	cpc	r27, r23
- 738:	10 f0       	brcs	.+4      	; 0x73e <__udivmodhi4_ep>
- 73a:	a6 1b       	sub	r26, r22
- 73c:	b7 0b       	sbc	r27, r23
+0000072a <__udivmodhi4_loop>:
+ 72a:	aa 1f       	adc	r26, r26
+ 72c:	bb 1f       	adc	r27, r27
+ 72e:	a6 17       	cp	r26, r22
+ 730:	b7 07       	cpc	r27, r23
+ 732:	10 f0       	brcs	.+4      	; 0x738 <__udivmodhi4_ep>
+ 734:	a6 1b       	sub	r26, r22
+ 736:	b7 0b       	sbc	r27, r23
 
-0000073e <__udivmodhi4_ep>:
- 73e:	88 1f       	adc	r24, r24
- 740:	99 1f       	adc	r25, r25
- 742:	5a 95       	dec	r21
- 744:	a9 f7       	brne	.-22     	; 0x730 <__udivmodhi4_loop>
- 746:	80 95       	com	r24
- 748:	90 95       	com	r25
- 74a:	bc 01       	movw	r22, r24
- 74c:	cd 01       	movw	r24, r26
- 74e:	08 95       	ret
+00000738 <__udivmodhi4_ep>:
+ 738:	88 1f       	adc	r24, r24
+ 73a:	99 1f       	adc	r25, r25
+ 73c:	5a 95       	dec	r21
+ 73e:	a9 f7       	brne	.-22     	; 0x72a <__udivmodhi4_loop>
+ 740:	80 95       	com	r24
+ 742:	90 95       	com	r25
+ 744:	bc 01       	movw	r22, r24
+ 746:	cd 01       	movw	r24, r26
+ 748:	08 95       	ret
 
-00000750 <_exit>:
- 750:	f8 94       	cli
+0000074a <_exit>:
+ 74a:	f8 94       	cli
 
-00000752 <__stop_program>:
- 752:	ff cf       	rjmp	.-2      	; 0x752 <__stop_program>
+0000074c <__stop_program>:
+ 74c:	ff cf       	rjmp	.-2      	; 0x74c <__stop_program>
