@@ -594,7 +594,12 @@ int main(void)
 				else errorCode|=(1<<i);
 			}
 			//if coolerState is OFF - clear all variables
-			if (coolerState==COOLER_OFF) coolerPower=0x00;
+			if (coolerState==COOLER_OFF) 
+			{
+				coolerPower=0x00;
+				U=0.0;
+				E=0.0;
+			}
 			//If no errors at sensor[0] and coolerState is ON - calculate and set software PWM
 			if (coolerState==COOLER_ON)
 				{
