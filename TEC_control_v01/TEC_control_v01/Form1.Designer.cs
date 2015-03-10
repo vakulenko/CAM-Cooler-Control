@@ -58,23 +58,6 @@
             // port_combobox
             // 
             this.port_combobox.FormattingEnabled = true;
-            this.port_combobox.Items.AddRange(new object[] {
-            "COM1",
-            "COM2",
-            "COM3",
-            "COM4",
-            "COM5",
-            "COM6",
-            "COM7",
-            "COM8",
-            "COM9",
-            "COM10",
-            "COM11",
-            "COM12",
-            "COM13",
-            "COM14",
-            "COM15",
-            "COM16"});
             this.port_combobox.Location = new System.Drawing.Point(6, 19);
             this.port_combobox.Name = "port_combobox";
             this.port_combobox.Size = new System.Drawing.Size(70, 21);

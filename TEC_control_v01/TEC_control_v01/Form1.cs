@@ -75,13 +75,19 @@ namespace TEC_control_01
                         XmlSerializer serializer = new XmlSerializer(typeof(iniSettings));
 
                         iniSettings pid_settings = (iniSettings)serializer.Deserialize(stream);
-                        //check port, temperature validity
-                        if ((pid_settings.port < 0) || (pid_settings.port > 16)) pid_settings.port = 0;
+                        //check port, temperature validity                        
                         if ((pid_settings.set_temp < low_set_temp) || (pid_settings.set_temp > high_set_temp)) pid_settings.set_temp = 0;
-
-                        port_combobox.SelectedIndex = pid_settings.port;
                         settemp_textbox.Text = pid_settings.set_temp.ToString("F1");
                         set_temp = pid_settings.set_temp;
+
+                        string[] comPorts;
+                        comPorts = SerialPort.GetPortNames();
+                        int j;
+                        for (j = 0; j < comPorts.Length; j++)
+                        {
+                            port_combobox.Items.Add(comPorts[j]);
+                            if (comPorts[j] == pid_settings.port) port_combobox.SelectedIndex = j;
+                        }
                     }
                 }
                 catch
@@ -91,6 +97,14 @@ namespace TEC_control_01
                     settemp_textbox.Text = "0,0";
                     set_temp = 0.0;
                 }
+            }
+            else
+            {
+                string[] comPorts;
+                comPorts = SerialPort.GetPortNames();
+                int j;
+                for (j = 0; j < comPorts.Length; j++)                
+                    port_combobox.Items.Add(comPorts[j]);                   
             }
         }
 
@@ -135,7 +149,7 @@ namespace TEC_control_01
                 }
 
                 send_command(info_cmd);
-                Thread.Sleep(200);
+                Thread.Sleep(1000);
                 if (read_packet() == 0)
                 {
                     System.Windows.Forms.MessageBox.Show("Connection failed.");
@@ -209,7 +223,7 @@ namespace TEC_control_01
         {
             //save settings
             iniSettings pid_settings = new iniSettings();
-            pid_settings.port = port_combobox.SelectedIndex;
+            pid_settings.port = port_combobox.SelectedItem.ToString();
             pid_settings.set_temp = set_temp;
             using (Stream writer = new FileStream(settings_filename, FileMode.Create))
             {
@@ -379,12 +393,12 @@ namespace TEC_control_01
 
     public class iniSettings
     {
-        public int port;
+        public string port;
         public double set_temp;
 
         public iniSettings()
         {
-            port = 0;
+            port = "COM1";
             set_temp = 0.0;
         }
     }

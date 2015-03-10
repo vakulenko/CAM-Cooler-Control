@@ -14,3 +14,4 @@ C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\GenerateResource.re
 C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\GenerateResource.write.1.tlog
 C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_v01.exe
 C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_v01.pdb
+C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_01.main_form.resources

@@ -4,20 +4,30 @@
 #include	<avr/eeprom.h>
 #include 	<stdint.h>
 
+////////////////////////////////////////////////////////////////////
+//Start User define parameters
+////////////////////////////////////////////////////////////////////
 //mode of operation
 //0 - mode disabled, 1 - enabled;
 //Hardware PWM 32kHz
 #define PWM_MODE		0
 //Software PWM 3Hz
 #define SLOW_PWM_MODE	1
-//Thermo
+//Thermoswitch
 #define THERMOSTAT_MODE	0
 
 //Module save previous state in EEPROM (on/off; setData[0])
-#define STANDALONE_MODE	0
+#define STANDALONE_MODE	1
 
-//Thermoswitch hysterezis
+//Thermoswitch hysterezis *0.1C
 #define HYSTERESIS		1
+
+//Proportional regulator
+#define KP		0.02
+#define KPSLOW	0.02
+////////////////////////////////////////////////////////////////////
+//End User define parameters
+////////////////////////////////////////////////////////////////////
 
 #define	BUFF_SIZE		11
 #define	SENSOR_COUNT	2
@@ -56,10 +66,6 @@
 
 //CRC
 #define CRC_POLY 0x31
-
-//Proportional regulator
-#define KP		0.02
-#define KPSLOW	0.002
 
 //uart packet buffer
 uint8_t rxBuf [BUFF_SIZE+1];
@@ -366,15 +372,15 @@ uint8_t presentDS18b20(uint8_t sensor_num)
 	else sensor_pin=SENSOR1_PIN;
 	
 	SENSOR_DDR|=(1<<sensor_pin);
-	_delay_us (480);
+	_delay_us (490);
 
 	SENSOR_DDR&=~(1<<sensor_pin);
-	_delay_us(70);
+	_delay_us(80);
 	
 	if ((SENSOR_PIN&(1<<sensor_pin)) == 0x00) res=1;  
 	else res=0;  
 	
-	_delay_us(410);
+	_delay_us(420);
 	return res;
 }
 
@@ -389,15 +395,15 @@ void sendDS18b20(uint8_t command, uint8_t sensor_num)
 	{
 		if ((data&0x01)==0x01) {    //Send 1 on SDA
 			SENSOR_DDR|=(1<<sensor_pin);
-			_delay_us(6);
+			_delay_us(9);
 			SENSOR_DDR&=~(1<<sensor_pin);
-			_delay_us(64);
+			_delay_us(75);
 		}
 		else {                   	//Send 0 on SDA
 			SENSOR_DDR|=(1<<sensor_pin);
-			_delay_us(60);
+			_delay_us(70);
 			SENSOR_DDR&=~(1<<sensor_pin);
-			_delay_us(10);
+			_delay_us(15);
 		}
 		data=data>>1;
 	}
@@ -414,32 +420,18 @@ uint16_t receiveDS18b20(uint8_t sensor_num)
 	for(i=0;i<16;i++)
 	{
 		SENSOR_DDR|=(1<<sensor_pin);		
-		_delay_us(6);
-		SENSOR_DDR&=~(1<<sensor_pin);		
 		_delay_us(9);
+		SENSOR_DDR&=~(1<<sensor_pin);		
+		_delay_us(12);
 
 		if ((SENSOR_PIN & (1<<sensor_pin))==0x00) res&=~_BV(i);	//If 0 on SDA
 		else 	res|=_BV(i);	    //IF 1 on SDA
 				
-		_delay_us(55);
+		_delay_us(65);
 	}
 	return res;
 }
 
-void my_delay_ms (uint8_t ms)
-{
-	uint8_t i;
-	if (ms>20)
-	{
-		for (i=0;i<200;i++)
-		{
-			_delay_ms(20);
-			ms-=20;
-			if (ms<20) break;
-		}
-	}
-	_delay_ms(ms);
-}
 //------------------------------------------------------------------------------------
 int main(void)
 {
@@ -607,15 +599,15 @@ int main(void)
 
 					U=U+KPSLOW*E;
 
-					if (U>255.0) 	U=255.0;
+					if (U>511.0) 	U=511.0;
 					if (U<=0.0) 	U=0.0;		
 					
 					if (U>0.0) TEC_PORT|=(1<<TEC_PIN);	
-					my_delay_ms((uint8_t)U);								
-					if (((uint8_t) U)!=255)TEC_PORT&=~(1<<TEC_PIN);
-					my_delay_ms(255-(uint8_t)(U));
+					_delay_ms((uint16_t)U);								
+					if (((uint16_t) U)!=511)TEC_PORT&=~(1<<TEC_PIN);
+					_delay_ms(511-(uint16_t)(U));
 
-					coolerPower=((uint8_t)U);
+					coolerPower=((uint16_t)(U/2));
 				}
 			}		
 	}	
