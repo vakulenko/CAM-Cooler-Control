@@ -24,7 +24,7 @@
 
 //Proportional regulator
 #define KP		0.02
-#define KPSLOW	0.02
+#define KPSLOW	0.01
 ////////////////////////////////////////////////////////////////////
 //End User define parameters
 ////////////////////////////////////////////////////////////////////
@@ -441,6 +441,9 @@ int main(void)
 	#if STANDALONE_MODE == 1
 		setData[0]= eeprom_read_word (&savedSetData);
 		coolerState = eeprom_read_byte(&savedCoolerState);
+		//if saved settings corrupted - set it by default
+		if ( (setData[0]<780)||(setData[0]>1780) ) setData[0]=1730;
+		if ( (coolerState!=COOLER_ON)&&(coolerState!=COOLER_OFF) ) coolerState=COOLER_OFF;
 	#else
 		setData[0]=1730;
 		coolerState=COOLER_OFF;
@@ -599,15 +602,15 @@ int main(void)
 
 					U=U+KPSLOW*E;
 
-					if (U>511.0) 	U=511.0;
+					if (U>255.0) 	U=255.0;
 					if (U<=0.0) 	U=0.0;		
 					
 					if (U>0.0) TEC_PORT|=(1<<TEC_PIN);	
-					_delay_ms((uint16_t)U);								
-					if (((uint16_t) U)!=511)TEC_PORT&=~(1<<TEC_PIN);
-					_delay_ms(511-(uint16_t)(U));
+					_delay_ms(U);								
+					if (((uint8_t) U)!=255)TEC_PORT&=~(1<<TEC_PIN);
+					_delay_ms(255-U);
 
-					coolerPower=((uint16_t)(U/2));
+					coolerPower=((uint8_t)U);
 				}
 			}		
 	}	

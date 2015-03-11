@@ -149,7 +149,7 @@ namespace TEC_control_01
                 }
 
                 send_command(info_cmd);
-                Thread.Sleep(1000);
+                Thread.Sleep(400);
                 if (read_packet() == 0)
                 {
                     System.Windows.Forms.MessageBox.Show("Connection failed.");
