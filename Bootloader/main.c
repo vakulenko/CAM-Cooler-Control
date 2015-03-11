@@ -364,7 +364,7 @@ int main(void)
 	BIPORT |= (1<<BIPNUM);	
 	BIDDR  |= (1<<BIPNUM);
 #endif
-
+ 
 
 #ifdef DISABLE_WDT_AT_STARTUP
 	#ifdef WDT_OFF_SPECIAL

@@ -461,7 +461,7 @@
  216               		push r3
  351:main.c        **** 	BIDDR  |= (1<<BIPNUM);
  352:main.c        **** #endif
- 353:main.c        **** 
+ 353:main.c        ****  
  354:main.c        **** 
  355:main.c        **** #ifdef DISABLE_WDT_AT_STARTUP
  217               		push r5
@@ -1825,15 +1825,15 @@
  1291               	.LBB234:
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-C:\DOCUME~1\Admin\LOCALS~1\Temp/ccNib6Gc.s:2      *ABS*:0000003f __SREG__
-C:\DOCUME~1\Admin\LOCALS~1\Temp/ccNib6Gc.s:3      *ABS*:0000003e __SP_H__
-C:\DOCUME~1\Admin\LOCALS~1\Temp/ccNib6Gc.s:4      *ABS*:0000003d __SP_L__
-C:\DOCUME~1\Admin\LOCALS~1\Temp/ccNib6Gc.s:5      *ABS*:00000034 __CCP__
-C:\DOCUME~1\Admin\LOCALS~1\Temp/ccNib6Gc.s:6      *ABS*:00000000 __tmp_reg__
-C:\DOCUME~1\Admin\LOCALS~1\Temp/ccNib6Gc.s:7      *ABS*:00000001 __zero_reg__
-C:\DOCUME~1\Admin\LOCALS~1\Temp/ccNib6Gc.s:96     .text:00000000 __vector_default
-C:\DOCUME~1\Admin\LOCALS~1\Temp/ccNib6Gc.s:110    .text:00000002 send_boot
-C:\DOCUME~1\Admin\LOCALS~1\Temp/ccNib6Gc.s:216    .text:0000003c main
+C:\DOCUME~1\Admin\LOCALS~1\Temp/cc9zdtHq.s:2      *ABS*:0000003f __SREG__
+C:\DOCUME~1\Admin\LOCALS~1\Temp/cc9zdtHq.s:3      *ABS*:0000003e __SP_H__
+C:\DOCUME~1\Admin\LOCALS~1\Temp/cc9zdtHq.s:4      *ABS*:0000003d __SP_L__
+C:\DOCUME~1\Admin\LOCALS~1\Temp/cc9zdtHq.s:5      *ABS*:00000034 __CCP__
+C:\DOCUME~1\Admin\LOCALS~1\Temp/cc9zdtHq.s:6      *ABS*:00000000 __tmp_reg__
+C:\DOCUME~1\Admin\LOCALS~1\Temp/cc9zdtHq.s:7      *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\Admin\LOCALS~1\Temp/cc9zdtHq.s:96     .text:00000000 __vector_default
+C:\DOCUME~1\Admin\LOCALS~1\Temp/cc9zdtHq.s:110    .text:00000002 send_boot
+C:\DOCUME~1\Admin\LOCALS~1\Temp/cc9zdtHq.s:216    .text:0000003c main
                             *COM*:00000080 gBuffer
 
 UNDEFINED SYMBOLS
