@@ -344,8 +344,8 @@ void processPacket(void)
 			if ((rxBuf[1]==COOLER_OFF)||(rxBuf[1]==COOLER_ON))
 			{
 				coolerState=rxBuf[1];
-				#if STANDALONE_MODE == 1
-					eeprom_write_word (&savedCoolerState, coolerState);	
+				#if STANDALONE_MODE == 1 
+					eeprom_write_byte(&savedCoolerState, coolerState);	
 				#endif				
 			}		
 		}
@@ -457,7 +457,7 @@ int main(void)
 	//Init ports, UART, PWM
 	SENSOR_PORT&=~((1<<SENSOR0_PIN)|(1<<SENSOR1_PIN));     	
 	SENSOR_DDR&=~((1<<SENSOR0_PIN)|(1<<SENSOR1_PIN));		
-
+ 
 	#if PWM_MODE == 1
 		initPWM();
 	#else
