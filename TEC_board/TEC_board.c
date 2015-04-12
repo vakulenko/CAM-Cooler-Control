@@ -594,6 +594,7 @@ int main(void)
 				coolerPower=0x00;
 				U=0.0;
 				E=0.0;
+				TEC_PORT&=~(1<<TEC_PIN);
 			}
 			//If no errors at sensor[0] and coolerState is ON - calculate and set software PWM
 			if (coolerState==COOLER_ON)
