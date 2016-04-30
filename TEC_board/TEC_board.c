@@ -61,8 +61,8 @@
 #define GET_DATA			0xbe
 
 //uart baudrate settings
-#define UART_BAUDRATE_H 0
-#define UART_BAUDRATE_L	51	//9600 bps at 8MHz
+#define USART_BAUDRATE 9600
+#define BAUD_PRESCALE (((F_CPU / (USART_BAUDRATE * 16UL))) - 1)
 
 //CRC
 #define CRC_POLY 0x31
@@ -95,8 +95,8 @@ uint8_t	savedCoolerState EEMEM;
 
 void uartInit(void)
 {
-	UBRRH = UART_BAUDRATE_H;		// Init UART baudrate
-	UBRRL = UART_BAUDRATE_L;
+	UBRRH = (BAUD_PRESCALE >> 8);		// Init UART baudrate
+	UBRRL = BAUD_PRESCALE;
 
 	UCSRB = (1<<RXEN)|(1<<TXEN)|(1 << RXCIE);	// TX, RX enable, RX interrupt enable
 	UCSRC = (1<<URSEL)|(1<<UCSZ1)|(1<<UCSZ0);
@@ -375,6 +375,7 @@ uint8_t presentDS18b20(uint8_t sensor_num)
 	_delay_us (490);
 
 	SENSOR_DDR&=~(1<<sensor_pin);
+	SENSOR_PORT|=(1<<sensor_pin);
 	_delay_us(80);
 	
 	if ((SENSOR_PIN&(1<<sensor_pin)) == 0x00) res=1;  
@@ -485,7 +486,6 @@ int main(void)
 				{
 					sendDS18b20(SKIP_ROM,i);
 					sendDS18b20(START_CONVERSION,i);
-					errorCode=0;
 				}
 				else errorCode|=(1<<i);
 			}
@@ -555,7 +555,6 @@ int main(void)
 			{
 				sendDS18b20(SKIP_ROM,i);
 				sendDS18b20(START_CONVERSION,i);
-				errorCode=0;
 			}
 			else errorCode|=(1<<i);
 		}
@@ -635,7 +634,6 @@ int main(void)
 				{
 					sendDS18b20(SKIP_ROM,i);
 					sendDS18b20(START_CONVERSION,i);
-					errorCode=0;
 				}
 				else errorCode|=(1<<i);
 			}
