@@ -376,7 +376,6 @@ uint8_t presentDS18b20(uint8_t sensor_num)
 	_delay_us (490);
 
 	SENSOR_DDR&=~(1<<sensor_pin);
-	SENSOR_PORT|=(1<<sensor_pin);
 	_delay_us(80);
 	
 	if ((SENSOR_PIN&(1<<sensor_pin)) == 0x00) res=1;  
