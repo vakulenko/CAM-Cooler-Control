@@ -378,9 +378,7 @@ void loop(void) {
     //P algo, do to put temperature reading to algo if error occured
     if ( (errorCode == NO_ERROR) && (coolerState == COOLER_ON) ) {
       internal_temp = get_measurement_results();
-      cli();
       E = (double) internal_temp - set_temp;
-      sei();
       U = U + KP * E;
       if (U > CYCLE_DURATION) {
         U = CYCLE_DURATION;
@@ -397,7 +395,7 @@ void loop(void) {
       }
       delay (CYCLE_DURATION - U);
 
-      coolerPower = ((byte)(U / 10));
+      coolerPower = ((byte)(U * 100 / CYCLE_DURATION));
     }
 
     internal_temp = get_measurement_results();
