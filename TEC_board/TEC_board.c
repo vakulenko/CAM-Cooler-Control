@@ -372,15 +372,15 @@ uint8_t presentDS18b20(uint8_t sensor_num)
 	else sensor_pin=SENSOR1_PIN;
 	
 	SENSOR_DDR|=(1<<sensor_pin);
-	_delay_us (490);
+	_delay_us (520);
 
 	SENSOR_DDR&=~(1<<sensor_pin);
-	_delay_us(80);
+	_delay_us(30);
 	
 	if ((SENSOR_PIN&(1<<sensor_pin)) == 0x00) res=1;  
 	else res=0;  
 	
-	_delay_us(420);
+	_delay_us(490);
 	return res;
 }
 
@@ -395,13 +395,13 @@ void sendDS18b20(uint8_t command, uint8_t sensor_num)
 	{
 		if ((data&0x01)==0x01) {    //Send 1 on SDA
 			SENSOR_DDR|=(1<<sensor_pin);
-			_delay_us(9);
+			_delay_us(15);
 			SENSOR_DDR&=~(1<<sensor_pin);
 			_delay_us(75);
 		}
 		else {                   	//Send 0 on SDA
 			SENSOR_DDR|=(1<<sensor_pin);
-			_delay_us(70);
+			_delay_us(75);
 			SENSOR_DDR&=~(1<<sensor_pin);
 			_delay_us(15);
 		}
@@ -427,7 +427,7 @@ uint16_t receiveDS18b20(uint8_t sensor_num)
 		if ((SENSOR_PIN & (1<<sensor_pin))==0x00) res&=~_BV(i);	//If 0 on SDA
 		else 	res|=_BV(i);	    //IF 1 on SDA
 				
-		_delay_us(65);
+		_delay_us(75);
 	}
 	return res;
 }
