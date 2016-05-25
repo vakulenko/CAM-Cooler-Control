@@ -25,7 +25,7 @@
 #define NO_ERROR        0
 #define SENSOR_ERROR    1
 #define TEMP_OFFSET     1280
-#define CYCLE_DURATION  1024
+#define CYCLE_DURATION  1020
 #define PERCENT_RATIO   (CYCLE_DURATION / 0xff)
 
 #define MAX_SET_TEMP    1780
