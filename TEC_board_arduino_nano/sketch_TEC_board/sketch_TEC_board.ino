@@ -52,6 +52,7 @@ uint8_t txBuf [BUFF_SIZE + 1];
 
 //sensor array data
 uint16_t internal_temp = 0;
+uint16_t external_temp = 0;
 uint16_t set_temp = 0;
 
 //packet
@@ -94,6 +95,16 @@ void setup(void) {
     errorInitCode = SENSOR_ERROR;
   }
 
+  //Arduinos internal temperature sensor
+  
+  // The internal temperature has to be used
+  // with the internal reference of 1.1V.
+  // Channel 8 can not be selected with
+  // the analogRead function yet.
+  // Set the internal reference and mux.
+  ADMUX = (_BV(REFS1) | _BV(REFS0) | _BV(MUX3));
+  ADCSRA |= _BV(ADEN);  // enable the ADC
+
   //read from EEPROM saved set value and coolerState state
   set_temp = eeprom_read_word (&savedSetData);
   coolerState = eeprom_read_byte(&savedCoolerState);
@@ -109,7 +120,8 @@ void setup(void) {
   //perform fist measurement
   start_measuring();
   delay(CYCLE_DURATION);
-  internal_temp = get_measurement_results();
+  internal_temp = GetIntTemp();
+  external_temp = GetExtTemp();
 
   //enable interrupts
   sei();
@@ -123,7 +135,7 @@ void start_measuring(void) {
 }
 
 //read DS18B20
-uint16_t get_measurement_results(void) {
+uint16_t GetIntTemp(void) {
   uint8_t i;
   uint16_t raw, frac, temp;
   boolean sign = false;
@@ -163,6 +175,21 @@ uint16_t get_measurement_results(void) {
   }
 
   return temp;
+}
+
+uint16_t GetExtTemp(void)
+{
+  uint16_t wADC;
+  ADCSRA |= _BV(ADSC);  // Start the ADC
+
+  // Detect end-of-conversion
+  while (bit_is_set(ADCSRA,ADSC));
+
+  // Reading register "ADCW" takes care of how to read ADCL and ADCH.
+  wADC = ADCW;
+
+  // The offset of 324.31 could be wrong. It is just an indication.
+  return TEMP_OFFSET + ((wADC - 324.31 ) / 1.22) * 10;
 }
 
 //Send byte thought UART
@@ -286,8 +313,8 @@ void prepareSystemStatus (void)
   txBuf[0] = 'd';
   txBuf[1] = internal_temp >> 8;
   txBuf[2] = internal_temp & 0x00ff;
-  txBuf[3] = (TEMP_OFFSET + 250) >> 8;
-  txBuf[4] = (TEMP_OFFSET + 250) & 0x00ff;
+  txBuf[3] = external_temp >> 8;
+  txBuf[4] = external_temp & 0x00ff;
   txBuf[5] = set_temp >> 8;
   txBuf[6] = set_temp & 0x00ff;
   txBuf[7] = coolerPower;
@@ -384,7 +411,6 @@ void loop(void) {
 
     //P algo, do to put temperature reading to algo if error occured
     if ( (errorCode == NO_ERROR) && (coolerState == COOLER_ON) ) {
-      internal_temp = get_measurement_results();
       E = (double) internal_temp - set_temp;
       U = U + KP * E;
       if (U > CYCLE_DURATION) {
@@ -405,6 +431,7 @@ void loop(void) {
       coolerPower = ((byte)(U  / PERCENT_RATIO));
     }
 
-    internal_temp = get_measurement_results();
+    internal_temp = GetIntTemp();
   }
+  external_temp = GetExtTemp();
 }
