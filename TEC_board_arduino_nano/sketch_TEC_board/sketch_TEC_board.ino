@@ -125,6 +125,8 @@ void start_measuring(void) {
 uint16_t get_measurement_results(void) {
   uint8_t i;
   uint16_t raw, frac, temp;
+  boolean sign = false;
+  
   ds.reset();
   ds.select(addr);
   ds.write(0xBE);         // Read Scratchpad
@@ -141,6 +143,10 @@ uint16_t get_measurement_results(void) {
 
   //avoiding float division
   raw = (data[1] << 8) | data[0];
+  if ((raw & 0x8000) != 0x0000) {
+    raw = 0xffff - raw + 1;
+    sign = true;
+  }
   frac = 0;
   for (i = 1; i <= 8; i = i * 2) {
     if (raw & i) {
@@ -148,7 +154,7 @@ uint16_t get_measurement_results(void) {
     }
   }
 
-  if (raw & 0x8000) {
+  if (sign) {
     temp = TEMP_OFFSET - ((raw >> 4) * 10 + frac / 1000);
   }
   else {
