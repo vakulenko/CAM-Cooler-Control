@@ -52,7 +52,7 @@ uint8_t txBuf [BUFF_SIZE + 1];
 
 //sensor array data
 uint16_t internal_temp = 0;
-uint16_t external_temp = TEMP_OFFSET + 250;
+uint16_t external_temp = 0;
 uint16_t set_temp = 0;
 
 //packet
