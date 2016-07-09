@@ -15,3 +15,11 @@ C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\GenerateResource.wr
 C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_v01.exe
 C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_v01.pdb
 C:\share\dev\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_01.main_form.resources
+E:\dev\CAM-Cooler-Control\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_v01.exe
+E:\dev\CAM-Cooler-Control\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_v01.pdb
+E:\dev\CAM-Cooler-Control\TEC_control_v01\TEC_control_v01\bin\Release\TEC_control_v01.exe
+E:\dev\CAM-Cooler-Control\TEC_control_v01\TEC_control_v01\bin\Release\TEC_control_v01.pdb
+E:\dev\CAM-Cooler-Control\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_v01.csprojResolveAssemblyReference.cache
+E:\dev\CAM-Cooler-Control\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_01.main_form.resources
+E:\dev\CAM-Cooler-Control\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_v01.Properties.Resources.resources
+E:\dev\CAM-Cooler-Control\TEC_control_v01\TEC_control_v01\obj\x86\Release\TEC_control_v01.csproj.GenerateResource.Cache

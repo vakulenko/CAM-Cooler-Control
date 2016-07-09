@@ -148,9 +148,27 @@ namespace TEC_control_01
                     return;
                 }
 
-                send_command(info_cmd);
-                Thread.Sleep(400);
-                if (read_packet() == 0)
+                const int maxAttempt = 5;
+                int attempt;
+
+                for (attempt = 0; attempt<maxAttempt; attempt++)
+                {
+                    try
+                    {
+                        send_command(info_cmd);
+                        Thread.Sleep(400);
+                        if (read_packet() != 0)
+                        {
+                            break;
+                        }
+                    }
+                    catch
+                    {
+                        ;
+                    }
+                }
+                
+                if (attempt==maxAttempt)
                 {
                     System.Windows.Forms.MessageBox.Show("Connection failed.");
                     serialport.Close();
