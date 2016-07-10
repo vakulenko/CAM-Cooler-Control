@@ -441,6 +441,9 @@ void loop(void) {
 
       coolerPower = ((byte)(U  / PERCENT_RATIO));
     }
+    else {
+       delay (CYCLE_DURATION);
+    }
 
     internal_temp = GetIntTemp();
   }
