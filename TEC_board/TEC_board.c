@@ -8,23 +8,12 @@
 //Start User define parameters
 ////////////////////////////////////////////////////////////////////
 //mode of operation
-//0 - mode disabled, 1 - enabled;
-//Hardware PWM 32kHz
-#define PWM_MODE		0
-//Software PWM 3Hz
-#define SLOW_PWM_MODE	1
-//Thermoswitch
-#define THERMOSTAT_MODE	0
 
-//Module save previous state in EEPROM (on/off; setData[0])
-#define STANDALONE_MODE	1
-
-//Thermoswitch hysterezis *0.1C
-#define HYSTERESIS		1
+//Module save previous state in EEPROM (uncomment to enable)
+#define STANDALONE_MODE
 
 //Proportional regulator
-#define KP		0.02
-#define KPSLOW	0.01
+#define KP		0.04
 ////////////////////////////////////////////////////////////////////
 //End User define parameters
 ////////////////////////////////////////////////////////////////////
@@ -80,11 +69,14 @@ uint8_t packetReceived=0;
 uint8_t currentRXPacketLen=0;
 
 uint8_t errorCode=0;
+uint8_t initializationErrorCode=0;
 uint8_t coolerState;
 uint8_t coolerPower=0;
 
-//PID
+//P
 double U, E;
+
+#define CYCLE    1020
 
 //saved value_data, powe state
 uint16_t savedSetData EEMEM;
@@ -131,48 +123,6 @@ void uartTransmitMessage(char* msg)
 		i++;
 	}
 	return;
-}
-
-//------------------------------------------------------------------------------------
-//PWM
-
-void initPWM (void)
-{
-	TEC_PORT&=~(1<<TEC_PIN);
-	TEC_DDR|=(1<<TEC_PIN);
-
-	TCCR1A|=(1<<WGM10);
-	TCCR1B|=(1<<WGM12)|(1<<CS10);
-
-	OCR1AL=0x00;
-	OCR1BL=0x00;
-	return;
-}
-
-void offPWM()
-{
-	TCCR1A&=~(1<<COM1A1);
-	return;
-}
-
-void onPWM()
-{
-	TCCR1A|=(1<<COM1A1);
-	return;
-}
-
-void setPWM (uint8_t data)
-{
-	OCR1AL=data;
-	if (data==0) offPWM();
-	else onPWM();
-
-	return;
-}
-
-uint8_t getPWM (void)
-{
-	return OCR1AL;
 }
 
 //------------------------------------------------------------------------------------
@@ -274,11 +224,7 @@ void prepareSystemStatus (void)
 	txBuf[4]= sensorData[1]&0x00ff;
 	txBuf[5]= setData[0]>>8;
 	txBuf[6]= setData[0]&0x00ff;
-	#if PWM_MODE == 1
-		txBuf[7]= getPWM();
-	#else
-		txBuf[7]=coolerPower;
-	#endif
+	txBuf[7]= coolerPower;
 	txBuf[8]= errorCode;
 	txBuf[9]= coolerState;
 	txBuf[10]=crc8Block(txBuf,10);
@@ -315,9 +261,9 @@ void processPacket(void)
 
 				val=(rxBuf[1]<<8)|(rxBuf[2]);
 				if ((val<=1780)&&(val>=780)) setData[0]=val;
-				#if STANDALONE_MODE == 1
+#ifdef STANDALONE_MODE
 					eeprom_write_word (&savedSetData, setData[0]);
-				#endif				
+#endif				
 			}
 			
 			break;
@@ -344,9 +290,9 @@ void processPacket(void)
 			if ((rxBuf[1]==COOLER_OFF)||(rxBuf[1]==COOLER_ON))
 			{
 				coolerState=rxBuf[1];
-				#if STANDALONE_MODE == 1 
+#ifdef STANDALONE_MODE
 					eeprom_write_byte(&savedCoolerState, coolerState);	
-				#endif				
+#endif				
 			}		
 		}
 		break;
@@ -372,7 +318,7 @@ uint8_t presentDS18b20(uint8_t sensor_num)
 	else sensor_pin=SENSOR1_PIN;
 	
 	SENSOR_DDR|=(1<<sensor_pin);
-	_delay_us (490);
+	_delay_us (500);
 
 	SENSOR_DDR&=~(1<<sensor_pin);
 	_delay_us(80);
@@ -395,15 +341,15 @@ void sendDS18b20(uint8_t command, uint8_t sensor_num)
 	{
 		if ((data&0x01)==0x01) {    //Send 1 on SDA
 			SENSOR_DDR|=(1<<sensor_pin);
-			_delay_us(9);
+			_delay_us(10);
 			SENSOR_DDR&=~(1<<sensor_pin);
-			_delay_us(75);
+			_delay_us(58);
 		}
 		else {                   	//Send 0 on SDA
 			SENSOR_DDR|=(1<<sensor_pin);
-			_delay_us(70);
+			_delay_us(60);
 			SENSOR_DDR&=~(1<<sensor_pin);
-			_delay_us(15);
+			_delay_us(8);
 		}
 		data=data>>1;
 	}
@@ -420,14 +366,14 @@ uint16_t receiveDS18b20(uint8_t sensor_num)
 	for(i=0;i<16;i++)
 	{
 		SENSOR_DDR|=(1<<sensor_pin);		
-		_delay_us(9);
+		_delay_us(8);
 		SENSOR_DDR&=~(1<<sensor_pin);		
 		_delay_us(12);
 
 		if ((SENSOR_PIN & (1<<sensor_pin))==0x00) res&=~_BV(i);	//If 0 on SDA
 		else 	res|=_BV(i);	    //IF 1 on SDA
 				
-		_delay_us(65);
+		_delay_us(63);
 	}
 	return res;
 }
@@ -435,19 +381,19 @@ uint16_t receiveDS18b20(uint8_t sensor_num)
 //------------------------------------------------------------------------------------
 int main(void)
 {
-	uint8_t i, sign, firstConv=_YES;
+	uint8_t i, sign;
 	uint16_t val, fract;	
 	//read from EEPROM saved value & coolerState state
-	#if STANDALONE_MODE == 1
+#ifdef STANDALONE_MODE
 		setData[0]= eeprom_read_word (&savedSetData);
 		coolerState = eeprom_read_byte(&savedCoolerState);
 		//if saved settings corrupted - set it by default
 		if ( (setData[0]<780)||(setData[0]>1780) ) setData[0]=1730;
 		if ( (coolerState!=COOLER_ON)&&(coolerState!=COOLER_OFF) ) coolerState=COOLER_OFF;
-	#else
+#else
 		setData[0]=1730;
 		coolerState=COOLER_OFF;
-	#endif
+#endif
 	//init variables
 	for (i=0;i<SENSOR_COUNT;i++)
 		sensorData[i]=0;
@@ -458,96 +404,41 @@ int main(void)
 	SENSOR_PORT&=~((1<<SENSOR0_PIN)|(1<<SENSOR1_PIN));     	
 	SENSOR_DDR&=~((1<<SENSOR0_PIN)|(1<<SENSOR1_PIN));		
  
-	#if PWM_MODE == 1
-		initPWM();
-	#else
-		TEC_PORT&=~(1<<TEC_PIN);
-		TEC_DDR|=(1<<TEC_PIN);
-	#endif
-	uartInit();	
-	sei();
+	TEC_PORT&=~(1<<TEC_PIN);
+	TEC_DDR|=(1<<TEC_PIN);
+	uartInit();
 
-//##############################################################
-	#if PWM_MODE == 1
-	while (1)
+    //set 12 bit resolution
+	for (i=0;i<SENSOR_COUNT;i++)
 	{
-		_delay_ms(10);
-		i++;
-		if (packetReceived!=0) processPacket();
-		if (i>=35)
+		if (presentDS18b20(i)==1)
 		{
-			i=0;
-			//send command from start measurement to sensors
-			errorCode=0;
-			for (i=0;i<SENSOR_COUNT;i++)
-			{
-				if (presentDS18b20(i)==1)
-				{
-					sendDS18b20(SKIP_ROM,i);
-					sendDS18b20(START_CONVERSION,i);
-				}
-				else errorCode|=(1<<i);
-			}
-			if (firstConv==_YES) firstConv=_NO;
-			else
-			{		 
-				//receive measured data from sensors
-				for (i=0;i<SENSOR_COUNT;i++)
-				{
-					if (presentDS18b20(i)==1)
-					{
-						sendDS18b20(SKIP_ROM,i);
-						sendDS18b20(GET_DATA,i);
-						val=receiveDS18b20(i);
-						if ((val&0x8000)!=0x00)
-						{
-							sign=1;
-							val=0xffff-val+1;
-						}
-						else sign=0;
-						fract=0;
-						if ((val&0x01)!=0x00) fract=fract+65;
-						if ((val&0x02)!=0x00) fract=fract+125;
-						if ((val&0x04)!=0x00) fract=fract+250;
-						if ((val&0x08)!=0x00) fract=fract+500;
-						val=(val>>4)*10+fract/100;
-						if (sign==1) val=OFFSET-val;
-						else val=val+OFFSET;
-						sensorData[i]=val;
-					}
-					else errorCode|=(1<<i);
-				}
-				//if coolerState is OFF - clear all variables and off PWM
-				if (coolerState==COOLER_OFF)
-				{
-					offPWM();
-					setPWM(0x00);
-					U=0.0;
-					E=0.0;
-				}				
-				else if (getPWM()!=0) onPWM();
-				//If no errors at sensor[0] and coolerState is ON - calculate and set correction
-				if (((errorCode & 0x01)==0)&&(coolerState==COOLER_ON))
-				{
-					E=(double) sensorData[0]-setData[0];
-
-					U=U+KP*E;
-
-					if (U>255.0) 	U=255.0;
-					if (U<=0.0) 	U=0.0;		
-					setPWM((uint8_t) U); 				
-				}
-			}
+			sendDS18b20(SKIP_ROM,i);
+			// write on scratchPad
+			sendDS18b20(0x4E,i);
+			// User byte 0 - Unused
+			sendDS18b20(0x00,i);
+			// User byte 1 - Unused
+			sendDS18b20(0x00,i);
+			// set up en 12 bits (0x7F)
+			sendDS18b20(0x7F,i);
+		}
+		else
+		{
+		    if (i==0) initializationErrorCode|=(1<<i);
 		}
 	}
-	#endif
+	sei();
 
-//##############################################################
-	#if SLOW_PWM_MODE == 1
-	while (1)
+	while (initializationErrorCode==0)
 	{
-		if (packetReceived!=0) processPacket();
 		errorCode=0;
+		//process packet
+		if (packetReceived!=0)
+		{
+		    processPacket();
+	    }
+		//start measurement
 		for (i=0;i<SENSOR_COUNT;i++)
 		{
 			if (presentDS18b20(i)==1)
@@ -555,143 +446,72 @@ int main(void)
 				sendDS18b20(SKIP_ROM,i);
 				sendDS18b20(START_CONVERSION,i);
 			}
-			else errorCode|=(1<<i);
-		}
-		if (firstConv==_YES) firstConv=_NO;
-		else
-		{		 
-			//receive measured data from sensors
-			for (i=0;i<SENSOR_COUNT;i++)
-			{
-				if (presentDS18b20(i)==1)
-				{
-					sendDS18b20(SKIP_ROM,i);
-					sendDS18b20(GET_DATA,i);
-					val=receiveDS18b20(i);
-					if ((val&0x8000)!=0x00)
-					{
-						sign=1;
-						val=0xffff-val+1;
-					}
-					else sign=0;
-					fract=0;
-					if ((val&0x01)!=0x00) fract=fract+65;
-					if ((val&0x02)!=0x00) fract=fract+125;
-					if ((val&0x04)!=0x00) fract=fract+250;
-					if ((val&0x08)!=0x00) fract=fract+500;
-					val=(val>>4)*10+fract/100;
-					if (sign==1) val=OFFSET-val;
-					else val=val+OFFSET;
-					sensorData[i]=val;
-				}
-				else errorCode|=(1<<i);
-			}
-			//if coolerState is OFF - clear all variables
-			if (coolerState==COOLER_OFF) 
-			{
-				coolerPower=0x00;
-				U=0.0;
-				E=0.0;
-				TEC_PORT&=~(1<<TEC_PIN);
-			}
-			//If no errors at sensor[0] and coolerState is ON - calculate and set software PWM
-			if (coolerState==COOLER_ON)
-				{
-					E=(double) sensorData[0]-setData[0];
-
-					U=U+KPSLOW*E;
-
-					if (U>255.0) 	U=255.0;
-					if (U<=0.0) 	U=0.0;		
-					
-					if (U>0.0) TEC_PORT|=(1<<TEC_PIN);	
-					_delay_ms(U);								
-					if (((uint8_t) U)!=255)TEC_PORT&=~(1<<TEC_PIN);
-					_delay_ms(255-U);
-
-					coolerPower=((uint8_t)U);
-				}
-			}		
-	}	
-	#endif
-
-//##############################################################
-	#if THERMOSTAT_MODE == 1
-	while (1)
-	{
-		_delay_ms(10);
-		i++;
-		if (packetReceived!=0) processPacket();
-		if (i>=35)
-		{
-			i=0;
-			//send command from start measurement to sensors
-			errorCode=0;
-			for (i=0;i<SENSOR_COUNT;i++)
-			{
-				if (presentDS18b20(i)==1)
-				{
-					sendDS18b20(SKIP_ROM,i);
-					sendDS18b20(START_CONVERSION,i);
-				}
-				else errorCode|=(1<<i);
-			}
-			if (firstConv==_YES) firstConv=_NO;
 			else
-			{		 
-				//receive measured data from sensors
-				for (i=0;i<SENSOR_COUNT;i++)
+			{
+			    if (i==0) errorCode|=(1<<i);
+			}
+		}
+
+        if (coolerState==COOLER_OFF) 
+		{
+		    coolerPower=0x00;
+			U=0.0;
+			E=0.0;
+			TEC_PORT&=~(1<<TEC_PIN);
+		}
+		
+		//P algo, do to put temperature reading to algo if error occured
+		if ( (errorCode == 0) && (coolerState == COOLER_ON) )
+		{
+		    E=(double) sensorData[0]-setData[0];
+			U=U+KP*E;
+			if (U>CYCLE) 	U=CYCLE;
+			if (U<=0.0) 	U=0.0;		
+			if (U>0.0) TEC_PORT|=(1<<TEC_PIN);	
+			_delay_ms(U);								
+			if (((uint16_t) U)!=CYCLE)TEC_PORT&=~(1<<TEC_PIN);
+			_delay_ms(CYCLE-U);
+			
+			coolerPower=((uint8_t)(U/4));
+        }
+		else
+		{
+			_delay_ms(1024);
+		}
+
+		//receive measured data from sensors
+		for (i=0;i<SENSOR_COUNT;i++)
+		{
+		    if (presentDS18b20(i)==1)
+			{
+				sendDS18b20(SKIP_ROM,i);
+				sendDS18b20(GET_DATA,i);
+				val=receiveDS18b20(i);
+				if ((val&0x8000)!=0x00)
 				{
-					if (presentDS18b20(i)==1)
-					{
-						sendDS18b20(SKIP_ROM,i);
-						sendDS18b20(GET_DATA,i);
-						val=receiveDS18b20(i);
-						if ((val&0x8000)!=0x00)
-						{
-							sign=1;
-							val=0xffff-val+1;
-						}
-						else sign=0;
-						fract=0;
-						if ((val&0x01)!=0x00) fract=fract+65;
-						if ((val&0x02)!=0x00) fract=fract+125;
-						if ((val&0x04)!=0x00) fract=fract+250;
-						if ((val&0x08)!=0x00) fract=fract+500;
-						val=(val>>4)*10+fract/100;
-						if (sign==1) val=OFFSET-val;
-						else val=val+OFFSET;
-						sensorData[i]=val;
-					}
-					else errorCode|=(1<<i);
+				    sign=1;
+					val=0xffff-val+1;
 				}
-				//if coolerState is OFF - clear all variables and off PIN
-				if (coolerState==COOLER_OFF) 
-					{
-						TEC_PORT&=~(1<<TEC_PIN);
-						coolerPower=0x00;
-					}
-					else
-					{
-						TEC_PORT|=(1<<TEC_PIN);																					
-						coolerPower=0xff;
-					}
-				//If no errors at sensor[0] and coolerState is ON - calculate and set PIN
-				if (coolerState==COOLER_ON)
-				{
-					if (sensorData[0]>(setData[0]+HYSTERESIS)) 
-					{
-						TEC_PORT|=(1<<TEC_PIN);
-						coolerPower=0xff;
-					}
-					else if (sensorData[0]<(setData[0]))
-					{
-						TEC_PORT&=~(1<<TEC_PIN);
-						coolerPower=0x00;
-					}
-				}
+				else sign=0;
+				fract=0;
+				if ((val&0x01)!=0x00) fract=fract+65;
+				if ((val&0x02)!=0x00) fract=fract+125;
+				if ((val&0x04)!=0x00) fract=fract+250;
+				if ((val&0x08)!=0x00) fract=fract+500;
+				val=(val>>4)*10+fract/100;
+				if (sign==1) val=OFFSET-val;
+				else val=val+OFFSET;
+				sensorData[i]=val;
+			}
+			else
+			{
+			    if (i==0) errorCode|=(1<<i);
 			}
 		}		
 	}
-	#endif
+
+	while (1)
+	{
+	    ;
+	}
 }
