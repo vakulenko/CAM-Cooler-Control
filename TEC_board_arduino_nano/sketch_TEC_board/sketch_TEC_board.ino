@@ -34,6 +34,8 @@
 #define COOLER_ON       1
 #define COOLER_OFF      0
 
+#define MAX_INIT_RETRY  60
+
 // Global variables
 //-----------------------------------------------------------------------------------------------------------------------
 OneWire  ds(SENSOR_PIN);
@@ -68,9 +70,13 @@ uint8_t coolerPower = 0;
 uint16_t savedSetData EEMEM;
 uint8_t  savedCoolerState EEMEM;
 
+uint8_t retryCounter;
+
 // Function definitions
 //-----------------------------------------------------------------------------------------------------------------------
 void setup(void) {
+
+  retryCounter = 0;
 
   //MOSFET PIN
   pinMode(MOSFET_PIN, OUTPUT);
@@ -107,7 +113,7 @@ void setup(void) {
   ds.reset();             // reset 1-Wire
 
   //Arduinos internal temperature sensor
-  
+
   // The internal temperature has to be used
   // with the internal reference of 1.1V.
   // Channel 8 can not be selected with
@@ -150,7 +156,7 @@ uint16_t GetIntTemp(void) {
   uint8_t i;
   uint16_t raw, frac, temp;
   boolean sign = false;
-  
+
   ds.reset();
   ds.select(addr);
   ds.write(0xBE);         // Read Scratchpad
@@ -194,7 +200,7 @@ uint16_t GetExtTemp(void)
   ADCSRA |= _BV(ADSC);  // Start the ADC
 
   // Detect end-of-conversion
-  while (bit_is_set(ADCSRA,ADSC));
+  while (bit_is_set(ADCSRA, ADSC));
 
   // Reading register "ADCW" takes care of how to read ADCL and ADCH.
   wADC = ADCW;
@@ -442,10 +448,19 @@ void loop(void) {
       coolerPower = ((byte)(U  / PERCENT_RATIO));
     }
     else {
-       delay (CYCLE_DURATION);
+      delay (CYCLE_DURATION);
     }
 
     internal_temp = GetIntTemp();
+  }
+  else
+  {
+    delay (CYCLE_DURATION);
+    retryCounter++;
+    if (retryCounter >= MAX_INIT_RETRY)
+    {
+      setup();
+    }
   }
   external_temp = GetExtTemp();
 }
