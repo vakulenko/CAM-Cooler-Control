@@ -78,6 +78,8 @@ double U, E;
 
 #define CYCLE    1020
 
+#define MAX_INIT_RETRY 60
+
 //saved value_data, powe state
 uint16_t savedSetData EEMEM;
 uint8_t	savedCoolerState EEMEM;
@@ -378,11 +380,11 @@ uint16_t receiveDS18b20(uint8_t sensor_num)
 	return res;
 }
 
-//------------------------------------------------------------------------------------
-int main(void)
+void setup(void)
 {
-	uint8_t i, sign;
-	uint16_t val, fract;	
+    uint8_t i;
+
+	initializationErrorCode=0;
 	//read from EEPROM saved value & coolerState state
 #ifdef STANDALONE_MODE
 		setData[0]= eeprom_read_word (&savedSetData);
@@ -425,93 +427,114 @@ int main(void)
 		}
 		else
 		{
-		    if (i==0) initializationErrorCode|=(1<<i);
+		    if (i==0)
+			{
+			    initializationErrorCode|=(1<<i);
+				errorCode = initializationErrorCode;
+			}
 		}
 	}
 	sei();
+}
 
-	while (initializationErrorCode==0)
-	{
-		errorCode=0;
-		//process packet
-		if (packetReceived!=0)
-		{
-		    processPacket();
-	    }
-		//start measurement
-		for (i=0;i<SENSOR_COUNT;i++)
-		{
-			if (presentDS18b20(i)==1)
-			{
-				sendDS18b20(SKIP_ROM,i);
-				sendDS18b20(START_CONVERSION,i);
-			}
-			else
-			{
-			    if (i==0) errorCode|=(1<<i);
-			}
-		}
-
-        if (coolerState==COOLER_OFF) 
-		{
-		    coolerPower=0x00;
-			U=0.0;
-			E=0.0;
-			TEC_PORT&=~(1<<TEC_PIN);
-		}
-		
-		//P algo, do to put temperature reading to algo if error occured
-		if ( (errorCode == 0) && (coolerState == COOLER_ON) )
-		{
-		    E=(double) sensorData[0]-setData[0];
-			U=U+KP*E;
-			if (U>CYCLE) 	U=CYCLE;
-			if (U<=0.0) 	U=0.0;		
-			if (U>0.0) TEC_PORT|=(1<<TEC_PIN);	
-			_delay_ms(U);								
-			if (((uint16_t) U)!=CYCLE)TEC_PORT&=~(1<<TEC_PIN);
-			_delay_ms(CYCLE-U);
-			
-			coolerPower=((uint8_t)(U/4));
-        }
-		else
-		{
-			_delay_ms(1024);
-		}
-
-		//receive measured data from sensors
-		for (i=0;i<SENSOR_COUNT;i++)
-		{
-		    if (presentDS18b20(i)==1)
-			{
-				sendDS18b20(SKIP_ROM,i);
-				sendDS18b20(GET_DATA,i);
-				val=receiveDS18b20(i);
-				if ((val&0x8000)!=0x00)
-				{
-				    sign=1;
-					val=0xffff-val+1;
-				}
-				else sign=0;
-				fract=0;
-				if ((val&0x01)!=0x00) fract=fract+65;
-				if ((val&0x02)!=0x00) fract=fract+125;
-				if ((val&0x04)!=0x00) fract=fract+250;
-				if ((val&0x08)!=0x00) fract=fract+500;
-				val=(val>>4)*10+fract/100;
-				if (sign==1) val=OFFSET-val;
-				else val=val+OFFSET;
-				sensorData[i]=val;
-			}
-			else
-			{
-			    if (i==0) errorCode|=(1<<i);
-			}
-		}		
-	}
+//------------------------------------------------------------------------------------
+int main(void)
+{
+	uint8_t i, sign, retryCount;
+	uint16_t val, fract;
 
 	while (1)
 	{
-	    ;
+	    retryCount=0;
+	    setup();
+	    while (initializationErrorCode==0)
+	    {
+		    errorCode=0;
+		    //process packet
+		    if (packetReceived!=0)
+		    {
+		        processPacket();
+	        }
+		    //start measurement
+		    for (i=0;i<SENSOR_COUNT;i++)
+		    {
+			    if (presentDS18b20(i)==1)
+			    {
+				    sendDS18b20(SKIP_ROM,i);
+				    sendDS18b20(START_CONVERSION,i);
+			    }
+			    else
+			    {
+			        if (i==0) errorCode|=(1<<i);
+			    }
+		    }
+
+            if (coolerState==COOLER_OFF) 
+		    {
+		        coolerPower=0x00;
+			    U=0.0;
+			    E=0.0;
+			    TEC_PORT&=~(1<<TEC_PIN);
+		    }
+		
+		    //P algo, do to put temperature reading to algo if error occured
+		    if ( (errorCode == 0) && (coolerState == COOLER_ON) )
+		    {
+		        E=(double) sensorData[0]-setData[0];
+			    U=U+KP*E;
+			    if (U>CYCLE) 	U=CYCLE;
+			    if (U<=0.0) 	U=0.0;		
+			    if (U>0.0) TEC_PORT|=(1<<TEC_PIN);	
+			    _delay_ms(U);								
+			    if (((uint16_t) U)!=CYCLE)TEC_PORT&=~(1<<TEC_PIN);
+			    _delay_ms(CYCLE-U);
+			
+			    coolerPower=((uint8_t)(U/4));
+            }
+		    else
+		    {
+			    _delay_ms(1024);
+		    }
+
+		    //receive measured data from sensors
+		    for (i=0;i<SENSOR_COUNT;i++)
+		    {
+		        if (presentDS18b20(i)==1)
+			    {
+				    sendDS18b20(SKIP_ROM,i);
+				    sendDS18b20(GET_DATA,i);
+				    val=receiveDS18b20(i);
+				    if ((val&0x8000)!=0x00)
+				    {
+				        sign=1;
+					    val=0xffff-val+1;
+				    }
+				    else sign=0;
+				    fract=0;
+				    if ((val&0x01)!=0x00) fract=fract+65;
+				    if ((val&0x02)!=0x00) fract=fract+125;
+				    if ((val&0x04)!=0x00) fract=fract+250;
+				    if ((val&0x08)!=0x00) fract=fract+500;
+				    val=(val>>4)*10+fract/100;
+				    if (sign==1) val=OFFSET-val;
+				    else val=val+OFFSET;
+				    sensorData[i]=val;
+			    }
+			    else
+			    {
+			        if (i==0) errorCode|=(1<<i);
+			    }
+		    }		
+	    }
+		while (retryCount<MAX_INIT_RETRY)
+		{
+		    retryCount++;
+		    _delay_ms(CYCLE);
+		    //process packet
+		    if (packetReceived!=0)
+		    {
+		        processPacket();
+	        }
+		}
 	}
 }
