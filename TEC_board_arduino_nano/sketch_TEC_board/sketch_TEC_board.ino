@@ -77,7 +77,8 @@ uint8_t retryCounter;
 void setup(void) {
 
   retryCounter = 0;
-  errorInitCode = 0;
+  errorInitCode = NO_ERROR;
+  errorCode = NO_ERROR;
 
   //MOSFET PIN
   pinMode(MOSFET_PIN, OUTPUT);
@@ -460,6 +461,7 @@ void loop(void) {
     retryCounter++;
     if (retryCounter >= MAX_INIT_RETRY)
     {
+      cli();
       setup();
     }
   }

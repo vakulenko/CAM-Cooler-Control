@@ -385,6 +385,7 @@ void setup(void)
     uint8_t i;
 
 	initializationErrorCode=0;
+	errorCode=0;
 	//read from EEPROM saved value & coolerState state
 #ifdef STANDALONE_MODE
 		setData[0]= eeprom_read_word (&savedSetData);
@@ -446,6 +447,7 @@ int main(void)
 	while (1)
 	{
 	    retryCount=0;
+		cli();
 	    setup();
 	    while (initializationErrorCode==0)
 	    {
