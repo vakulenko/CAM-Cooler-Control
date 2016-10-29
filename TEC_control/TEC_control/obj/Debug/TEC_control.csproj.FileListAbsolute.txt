@@ -1,0 +1,7 @@
+E:\dev\CAM-Cooler-Control\TEC_control\TEC_control\bin\Debug\TEC_control.exe.config
+E:\dev\CAM-Cooler-Control\TEC_control\TEC_control\bin\Debug\TEC_control.exe
+E:\dev\CAM-Cooler-Control\TEC_control\TEC_control\bin\Debug\TEC_control.pdb
+E:\dev\CAM-Cooler-Control\TEC_control\TEC_control\obj\Debug\TEC_control.Properties.Resources.resources
+E:\dev\CAM-Cooler-Control\TEC_control\TEC_control\obj\Debug\TEC_control.csproj.GenerateResource.Cache
+E:\dev\CAM-Cooler-Control\TEC_control\TEC_control\obj\Debug\TEC_control.exe
+E:\dev\CAM-Cooler-Control\TEC_control\TEC_control\obj\Debug\TEC_control.pdb
