@@ -30,7 +30,7 @@ namespace TEC_control
         private byte[] info_cmd = { 0x69, 0x9f };
         private byte[] get_cmd = { 0x67, 0x80 };
         private byte[] set_cmd = { 0x73, 0x00, 0x00, 0x00 };
-        private byte[] pwm_cmd = { 0x70, 0x00, 0x00 };
+        private byte[] pwr_cmd = { 0x70, 0x00, 0x00 };
         private byte currentCmd = 0x00;
 
         private const int baudrate = 9600;
@@ -66,6 +66,13 @@ namespace TEC_control
 
         private static System.Timers.Timer connectTimer;
         private static System.Timers.Timer setTimer;
+
+        private DateTime lastSent;
+        private DateTime lastReceive = DateTime.Now;
+
+        private bool helloFlag = false;
+
+        private int waitPacket = 0;
 
         public main_form()
         {
@@ -142,8 +149,58 @@ namespace TEC_control
             }
         }
 
+        private void FaultDisconnect()
+        {
+            get_timer.Enabled = false;
+            setTimer.Enabled = false;
+            connectTimer.Enabled = false;
+            try
+            {
+                serialport.Close();
+            }
+            catch
+            {
+                ;
+            }
+            connect_button.Text = "Connect";
+            IsConnected = false;
+            status_label.Text = "Disconnected";
+            port_combobox.Enabled = !IsConnected;
+            control_groupbox.Enabled = IsConnected;
+        }
+
         private void get_timer_tick(object sender, EventArgs e)
         {
+            lastSent = DateTime.Now;
+
+            //detect 30 sec timeout
+            if ((lastSent - lastReceive).TotalSeconds > 30)
+            {
+                FaultDisconnect();
+                System.Windows.Forms.MessageBox.Show("Device does not responding more that 30 seconds. Check connection.");
+                return;
+            }
+            
+            string[] comPorts;
+            bool comPortEjected = true;
+            comPorts = SerialPort.GetPortNames();
+            int j;
+            for (j = 0; j < comPorts.Length; j++)
+            {
+                if (comPorts[j] == port_combobox.SelectedItem.ToString()) 
+                {
+                    comPortEjected = false;
+                }
+            }
+
+            if (comPortEjected)
+            {
+                FaultDisconnect();
+                System.Windows.Forms.MessageBox.Show("Serial port unexpectedly ejected from system.");
+                return;
+            }
+            
+
             if (slowCoolingReady && slowCoolingCheckBox.Checked)
             {
                 slowCoolingReady = false;
@@ -152,10 +209,6 @@ namespace TEC_control
             }
             else
             {
-                if (read_packet() == 0)
-                {
-                    serialport.DiscardInBuffer();
-                }
                 send_command(get_cmd);
             }
         }
@@ -179,11 +232,15 @@ namespace TEC_control
 
                 try
                 {
+                    //to prevent arduino nano reset - disable DTR pin
+                    serialport.DtrEnable = false;
+
                     serialport.Open();
                     serialport.DiscardInBuffer();
                     serialport.DiscardOutBuffer();
                     serialport.ReadTimeout = 500;
                     serialport.WriteTimeout = 500;
+                    serialport.DataReceived += new SerialDataReceivedEventHandler(read_packet);
                 }
                 catch
                 {
@@ -196,14 +253,15 @@ namespace TEC_control
 
                 const int maxAttempt = 5;
                 int attempt;
+                helloFlag = false;
 
                 for (attempt = 0; attempt < maxAttempt; attempt++)
                 {
                     try
                     {
                         send_command(info_cmd);
-                        Thread.Sleep(1000);
-                        if (read_packet() != 0)
+                        Thread.Sleep(1100);
+                        if (helloFlag)
                         {
                             break;
                         }
@@ -239,10 +297,11 @@ namespace TEC_control
                 IsConnected = false;
                 SaveSettings();
                 status_label.Text = "Disconnected";
+                this.Enabled = true;
             }
+            port_combobox.Enabled = !IsConnected;
             control_groupbox.Enabled = IsConnected;
             slowCoolingNumericUpDown.Enabled = slowCoolingCheckBox.Checked;
-            this.Enabled = true;
         }
 
         private void setTimerTick(object sender, EventArgs e)
@@ -257,7 +316,7 @@ namespace TEC_control
                     }
                 case 0x01:
                     {
-                        send_command(pwm_cmd);
+                        send_command(pwr_cmd);
                         break;
                     }
                 default:
@@ -266,6 +325,7 @@ namespace TEC_control
                     }
             }
             Thread.Sleep(1200);
+            waitPacket = 3;
             get_timer.Enabled = true;
         }
 
@@ -277,6 +337,7 @@ namespace TEC_control
                 status_label.Text = "Connecting...";
             }
             this.Enabled = false;
+            waitPacket = 3;
             connectTimer.Enabled = true;
         }
 
@@ -317,14 +378,6 @@ namespace TEC_control
             }
         }
 
-        private void FormIsClosing(object sender, FormClosingEventArgs e)
-        {
-            if (IsConnected)
-            {
-                serialport.Close();
-            }
-        }
-
         private void SaveSettings()
         {
             //save settings
@@ -357,27 +410,59 @@ namespace TEC_control
 
         private void send_command(byte[] cmd)
         {
-            serialport.Write(cmd, 0, cmd.Length);
+            try
+            {
+                serialport.Write(cmd, 0, cmd.Length);
+            }
+            catch
+            {
+                ;
+            }
         }
 
-        private byte read_packet()
+        private void read_packet(object sender, EventArgs e)
         {
             byte crc, i;
 
             for (i = 0; i < buffer_size; i++)
                 rx_buf[i] = 0;
 
-            if ((serialport.BytesToRead != responce_packet_size) && (serialport.BytesToRead != info_packet_size)) return 0;
-            serialport.Read(rx_buf, 0, serialport.BytesToRead);
+            try
+            {
+
+                if ((serialport.BytesToRead != responce_packet_size) && (serialport.BytesToRead != info_packet_size))
+                {
+                    if (serialport.BytesToRead > ((responce_packet_size > info_packet_size) ? responce_packet_size : info_packet_size))
+                    {
+                        serialport.DiscardInBuffer();
+                    }
+                    return;
+                }
+                serialport.Read(rx_buf, 0, serialport.BytesToRead);
+            }
+            catch
+            {
+                ;
+            }
             crc = crc8_block(rx_buf, (byte)(rx_buf.Length - 1));
-            if (rx_buf[rx_buf.Length - 1] != crc) return 0;
+            if (rx_buf[rx_buf.Length - 1] != crc)
+            {
+                return;
+            }
 
             //check command responce v, d. renew interface if correct
             switch (rx_buf[0])
             {
                 case 0x76:
                     {
-                        if ((rx_buf[1] != HWREV) || (rx_buf[2] != SWREV) || (rx_buf[3] != SENSOR_CNT) || (rx_buf[4] != VAL_CNT)) return 0;
+                        if ((rx_buf[1] != HWREV) || (rx_buf[2] != SWREV) || (rx_buf[3] != SENSOR_CNT) || (rx_buf[4] != VAL_CNT))
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            helloFlag = true;
+                        }
                         break;
                     };
                 case 0x64:
@@ -404,6 +489,15 @@ namespace TEC_control
                         else
                         {
                             onoff_button.Text = "ON TEC";
+                        }
+
+                        if (waitPacket >= 0)
+                        {
+                            waitPacket--;
+                        }
+                        if ((!this.Enabled) && (waitPacket == 0))
+                        {
+                            this.Enabled = true;
                         }
 
                         switch (err_code)
@@ -474,27 +568,26 @@ namespace TEC_control
                     };
                 default:
                     {
-                        return 0;
+                        return;
                     };
             }
-            this.Enabled = true;
-            return 1;
+            lastReceive = DateTime.Now;
         }
 
         private void onoff_button_Click(object sender, EventArgs e)
         {
             pwm_state = !pwm_state;
 
-            pwm_cmd[1] = 0x00;
+            pwr_cmd[1] = 0x00;
             if (pwm_state)
             {
-                pwm_cmd[1] = 0x01;
+                pwr_cmd[1] = 0x01;
             }
             else
             {
                 slowCoolingTimer.Enabled = false;
             }
-            pwm_cmd[2] = crc8_block(pwm_cmd, 2);
+            pwr_cmd[2] = crc8_block(pwr_cmd, 2);
 
             currentCmd = PWR_CMD;
             this.Enabled = false;
@@ -548,9 +641,9 @@ namespace TEC_control
         public iniSettings()
         {
             port = "COM1";
-            set_temp = 0.0;
+            set_temp = 50.0;
             slowCooling = false;
-            slowCoolingSpeed = 0.5;
+            slowCoolingSpeed = 0.1;
         }
     }
 }

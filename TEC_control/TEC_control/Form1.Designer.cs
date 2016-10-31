@@ -363,7 +363,6 @@
             this.MinimizeBox = false;
             this.Name = "main_form";
             this.Text = "TEC control v.0.2";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormIsClosing);
             this.port_groupbox.ResumeLayout(false);
             this.status_groupbox.ResumeLayout(false);
             this.status_groupbox.PerformLayout();

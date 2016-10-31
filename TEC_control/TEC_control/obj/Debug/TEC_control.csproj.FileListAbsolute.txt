@@ -5,3 +5,4 @@ E:\dev\CAM-Cooler-Control\TEC_control\TEC_control\obj\Debug\TEC_control.Properti
 E:\dev\CAM-Cooler-Control\TEC_control\TEC_control\obj\Debug\TEC_control.csproj.GenerateResource.Cache
 E:\dev\CAM-Cooler-Control\TEC_control\TEC_control\obj\Debug\TEC_control.exe
 E:\dev\CAM-Cooler-Control\TEC_control\TEC_control\obj\Debug\TEC_control.pdb
+E:\dev\CAM-Cooler-Control\TEC_control\TEC_control\obj\Debug\TEC_control.csprojResolveAssemblyReference.cache
