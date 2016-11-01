@@ -293,6 +293,9 @@ namespace TEC_control
             else
             {
                 get_timer.Enabled = false;
+                slowCoolingTimer.Enabled = false;
+                connectTimer.Enabled = false;
+                setTimer.Enabled = false;
                 serialport.Close();
                 connect_button.Text = "Connect";
                 IsConnected = false;
