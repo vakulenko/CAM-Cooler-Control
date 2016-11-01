@@ -47,6 +47,7 @@ namespace TEC_control
         private const byte VAL_CNT = 0x01;
         private const byte SET_CMD = 0x00;
         private const byte PWR_CMD = 0x01;
+        private const byte PACKET_SKIP_GRAYOUT = 0x03;
 
         private const int temp_offset = 128;
 
@@ -325,7 +326,6 @@ namespace TEC_control
                     }
             }
             Thread.Sleep(1200);
-            waitPacket = 3;
             get_timer.Enabled = true;
         }
 
@@ -337,7 +337,7 @@ namespace TEC_control
                 status_label.Text = "Connecting...";
             }
             this.Enabled = false;
-            waitPacket = 3;
+            waitPacket = PACKET_SKIP_GRAYOUT;
             connectTimer.Enabled = true;
         }
 
@@ -356,6 +356,8 @@ namespace TEC_control
 
         private void set_button_Click(object sender, EventArgs e)
         {
+            this.Enabled = false;
+            waitPacket = PACKET_SKIP_GRAYOUT;
             if (slowCoolingCheckBox.Checked && pwm_state)
             {
                 slowCoolingTimer.Enabled = false;
@@ -372,7 +374,6 @@ namespace TEC_control
             {
                 prepareSetTempPacket((double)setTempNumericUpDown.Value);
                 currentCmd = SET_CMD;
-                this.Enabled = false;
                 get_timer.Enabled = false;
                 setTimer.Enabled = true;
             }
@@ -577,6 +578,7 @@ namespace TEC_control
         private void onoff_button_Click(object sender, EventArgs e)
         {
             pwm_state = !pwm_state;
+            waitPacket = PACKET_SKIP_GRAYOUT;
 
             pwr_cmd[1] = 0x00;
             if (pwm_state)
