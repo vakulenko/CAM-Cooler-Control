@@ -20,7 +20,7 @@ namespace TEC_control
 
         private int pwm = 0;
         private int err_code = 0;
-        private bool pwm_state = false;
+        private bool pwr_state = false;
         private double external_temp = 0.0;
         private double internal_temp = 0.0;
         private double val_temp = 0.0;
@@ -358,7 +358,7 @@ namespace TEC_control
         {
             this.Enabled = false;
             waitPacket = PACKET_SKIP_GRAYOUT;
-            if (slowCoolingCheckBox.Checked && pwm_state)
+            if (slowCoolingCheckBox.Checked && pwr_state)
             {
                 slowCoolingTimer.Enabled = false;
                 slowCoolingTarger = (double)setTempNumericUpDown.Value;
@@ -476,14 +476,14 @@ namespace TEC_control
                         err_code = rx_buf[8];
                         if (rx_buf[9] == 0x00)
                         {
-                            pwm_state = false;
+                            pwr_state = false;
                         }
                         else
                         {
-                            pwm_state = true;
+                            pwr_state = true;
                         }
 
-                        if (pwm_state)
+                        if (pwr_state)
                         {
                             onoff_button.Text = "OFF TEC";
                         }
@@ -511,7 +511,7 @@ namespace TEC_control
                                     internaltemp_label.Text = internal_temp.ToString("F1") + "C";
                                     deltatemp_label.Text = (external_temp - internal_temp).ToString("F1") + "C";
                                     settemp_label.Text = val_temp.ToString("F1") + "C";
-                                    if (pwm_state) status_label.Text = "On";
+                                    if (pwr_state) status_label.Text = "On";
                                     else status_label.Text = "Off";
                                     break;
                                 }
@@ -523,7 +523,7 @@ namespace TEC_control
                                     internaltemp_label.Text = "N/A";
                                     deltatemp_label.Text = "N/A";
                                     settemp_label.Text = val_temp.ToString("F1") + "C";
-                                    if (pwm_state) status_label.Text = "On";
+                                    if (pwr_state) status_label.Text = "On";
                                     else status_label.Text = "Off";
                                     break;
                                 }
@@ -535,7 +535,7 @@ namespace TEC_control
                                     internaltemp_label.Text = internal_temp.ToString("F1") + "C";
                                     deltatemp_label.Text = "N/A";
                                     settemp_label.Text = val_temp.ToString("F1") + "C";
-                                    if (pwm_state) status_label.Text = "On";
+                                    if (pwr_state) status_label.Text = "On";
                                     else status_label.Text = "Off";
                                     break;
                                 }
@@ -547,7 +547,7 @@ namespace TEC_control
                                     internaltemp_label.Text = "N/A";
                                     deltatemp_label.Text = "N/A";
                                     settemp_label.Text = val_temp.ToString("F1") + "C";
-                                    if (pwm_state) status_label.Text = "On";
+                                    if (pwr_state) status_label.Text = "On";
                                     else status_label.Text = "Off";
                                     break;
                                 }
@@ -559,7 +559,7 @@ namespace TEC_control
                                     internaltemp_label.Text = internal_temp.ToString("F1") + "C";
                                     deltatemp_label.Text = (external_temp - internal_temp).ToString("F1") + "C";
                                     settemp_label.Text = val_temp.ToString("F1") + "C";
-                                    if (pwm_state) status_label.Text = "On";
+                                    if (pwr_state) status_label.Text = "On";
                                     else status_label.Text = "Off";
                                     break;
                                 };
@@ -577,11 +577,11 @@ namespace TEC_control
 
         private void onoff_button_Click(object sender, EventArgs e)
         {
-            pwm_state = !pwm_state;
+            pwr_state = !pwr_state;
             waitPacket = PACKET_SKIP_GRAYOUT;
 
             pwr_cmd[1] = 0x00;
-            if (pwm_state)
+            if (pwr_state)
             {
                 pwr_cmd[1] = 0x01;
             }
